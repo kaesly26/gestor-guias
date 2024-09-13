@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProgramaController } from './programa.controller';
 import { ProgramaService } from './programa.service';

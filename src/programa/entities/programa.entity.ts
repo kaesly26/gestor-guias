@@ -5,12 +5,12 @@ export class Programa {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 20 })
   Codigo: string;
 
-  @Column()
+  @Column({ length: 80 })
   Nombre: string;
 
-  @Column()
+  @Column({ length: 100 })
   Descripcion: string;
 }

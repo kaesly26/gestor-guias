@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProgramaModule } from './programa/programa.module';
+import { Programa } from './programa/entities/programa.entity';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { ProgramaModule } from './programa/programa.module';
       username: 'root',
       password: 'nuevaconexion',
       database: 'gestor_guias',
-      entities: [],
+      entities: [Programa],
       synchronize: true,
     }),
     ProgramaModule,

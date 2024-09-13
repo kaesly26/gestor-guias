@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -35,7 +36,7 @@ export class ProgramaController {
     @Param('id') id: string,
     @Body() updateProgramaDto: UpdateProgramaDto,
   ) {
-    return this.programaService.update(+id, updateProgramaDto);
+    return this.programaService.update(id, updateProgramaDto);
   }
 
   @Delete(':id')

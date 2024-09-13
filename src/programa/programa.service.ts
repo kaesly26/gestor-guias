@@ -1,45 +1,37 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { CreateProgramaDto } from './dto/create-programa.dto';
 import { UpdateProgramaDto } from './dto/update-programa.dto';
+import { Programa } from './entities/programa.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ProgramaService {
-  programa = [
-    {
-      Codigo: '101',
-      Nombre: 'cocina',
-      Descripcion: 'njkjkvnjkdvnjnjrfdnjfnj',
-    },
-    {
-      Codigo: '102',
-      Nombre: 'software',
-      Descripcion: 'njkjkvnjkdvnjnjrfdnjfnj',
-    },
-    {
-      Codigo: '103',
-      Nombre: 'nuvff',
-      Descripcion: 'njkjkvnjkdvnjnjrfdnjfnj',
-    },
-  ];
-  create(createProgramaDto: CreateProgramaDto) {
-    this.programa.push(createProgramaDto);
-    return this.programa;
+  programas = [];
+  constructor(
+    @InjectRepository(Programa)
+    private programaRepository: Repository<Programa>,
+  ) {}
+
+  async create(createProgramaDto: CreateProgramaDto): Promise<Programa> {
+    const programa = this.programaRepository.create(createProgramaDto);
+    return this.programaRepository.save(programa);
   }
 
-  findAll() {
-    return this.programa;
+  async findAll(): Promise<Programa[]> {
+    return this.programaRepository.find();
   }
 
-  findOne(id: string) {
-    return this.programa.filter((p) => p.Codigo === id);
+  findOne(Codigo: string): Promise<Programa | null> {
+    return this.programaRepository.findOneBy({ Codigo });
   }
 
-  update(id: number, updateProgramaDto: UpdateProgramaDto) {
+  update(id: string, updateProgramaDto: UpdateProgramaDto) {
     return `This action updates a #${id} programa`;
   }
 
-  remove(id: string) {
-    codigo = this.programa.findIndex((p) => p.Codigo === id);
-    return this.programa.splice(codigo, 1);
+  async remove(Codigo: string): Promise<void> {
+    await this.programaRepository.delete(Codigo);
   }
 }
