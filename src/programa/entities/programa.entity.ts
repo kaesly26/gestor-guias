@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+/* eslint-disable prettier/prettier */
+import { Entity, Column, PrimaryGeneratedColumn, } from 'typeorm';
 
 @Entity()
 export class Programa {
