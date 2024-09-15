@@ -4,6 +4,7 @@ import { UpdateCompetenciaDto } from './dto/update-competencia.dto';
 
 @Injectable()
 export class CompetenciaService {
+  competencia: [];
   create(createCompetenciaDto: CreateCompetenciaDto) {
     return 'This action adds a new competencia';
   }

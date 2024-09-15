@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Entity, Column, PrimaryGeneratedColumn, } from 'typeorm';
+import { Competencia } from 'src/competencia/entities/competencia.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany} from 'typeorm';
 
 @Entity()
 export class Programa {
@@ -14,4 +15,8 @@ export class Programa {
 
   @Column({ length: 100 })
   Descripcion: string;
+
+  @OneToMany(() => Competencia, (competencia) => competencia.programa)
+  competencias: Competencia[];
 }
+
