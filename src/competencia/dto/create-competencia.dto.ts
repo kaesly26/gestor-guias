@@ -26,10 +26,10 @@ export class CreateCompetenciaDto {
   @IsOptional()
   Descripcion: string;
 
-  @IsNotEmpty()
-  @IsInt()
-  ID_programa: number;
-
   @IsEnum(TraversalType)
   Tipo: TraversalType;
+
+  @IsNotEmpty()
+  @IsInt()
+  id_programa: number;
 }

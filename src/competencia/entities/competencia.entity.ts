@@ -11,9 +11,9 @@ import {
 @Entity()
 export class Competencia {
   @PrimaryGeneratedColumn()
-  id: number;
+  ID: number;
 
-  @Column({ length: 20 })
+  @Column({ length: 20, unique: true })
   Codigo: string;
 
   @Column({ length: 80 })
@@ -22,14 +22,14 @@ export class Competencia {
   @Column({ length: 100 })
   Descripcion: string;
 
-  @ManyToOne(() => Programa, (programa) => programa.competencias)
-  @JoinColumn({ name: 'ID_programa' })
-  programa: Programa;
-
   @Column({
     type: 'enum',
     enum: ['Trasversal', 'Tecnica'],
     default: 'Trasversal',
   })
   Tipo: string;
+
+  @ManyToOne(() => Programa, (programa) => programa.competencias)
+  @JoinColumn({ name: 'id_programa' })
+  programa: Programa;
 }

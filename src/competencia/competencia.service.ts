@@ -1,27 +1,56 @@
-import { Injectable } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateCompetenciaDto } from './dto/create-competencia.dto';
 import { UpdateCompetenciaDto } from './dto/update-competencia.dto';
+import { Competencia } from './entities/competencia.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class CompetenciaService {
-  competencia: [];
-  create(createCompetenciaDto: CreateCompetenciaDto) {
-    return 'This action adds a new competencia';
+  constructor(
+    @InjectRepository(Competencia)
+    private competenciaRepository: Repository<Competencia>,
+  ) {}
+
+  async create(
+    createCompetenciaDto: CreateCompetenciaDto,
+  ): Promise<Competencia> {
+    try {
+      const competencia =
+        this.competenciaRepository.create(createCompetenciaDto);
+      return await this.competenciaRepository.save(competencia);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al crear la competencia');
+    }
+  }
+  async findAll(): Promise<Competencia[]> {
+    return this.competenciaRepository.find();
   }
 
-  findAll() {
-    return `This action returns all competencia`;
+  findOne(Codigo: string): Promise<Competencia | null> {
+    const comp = this.competenciaRepository.findOneBy({ Codigo });
+    if (!comp) {
+      throw new NotFoundException(`Competencia not found`);
+    } else {
+      return comp;
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} competencia`;
+  async update(
+    Codigo: string,
+    updateProgramaDto: UpdateCompetenciaDto,
+  ): Promise<Competencia> {
+    const comp = await this.competenciaRepository.findOneBy({ Codigo });
+    if (!comp) {
+      throw new NotFoundException(`competencia with Codigo ${Codigo} not found`);
+    }
+
+    Object.assign(comp, updateProgramaDto);
+    return this.competenciaRepository.save(comp);
   }
 
-  update(id: number, updateCompetenciaDto: UpdateCompetenciaDto) {
-    return `This action updates a #${id} competencia`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} competencia`;
+  async remove(id: number): Promise<void> {
+    await this.competenciaRepository.delete(id);
   }
 }

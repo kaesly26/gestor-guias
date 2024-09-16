@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ProgramaService {
-  programas = [];
   constructor(
     @InjectRepository(Programa)
     private programaRepository: Repository<Programa>,

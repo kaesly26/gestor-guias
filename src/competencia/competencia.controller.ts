@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CompetenciaService } from './competencia.service';
 import { CreateCompetenciaDto } from './dto/create-competencia.dto';
 import { UpdateCompetenciaDto } from './dto/update-competencia.dto';
@@ -19,16 +28,19 @@ export class CompetenciaController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.competenciaService.findOne(+id);
+    return this.competenciaService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompetenciaDto: UpdateCompetenciaDto) {
-    return this.competenciaService.update(+id, updateCompetenciaDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateCompetenciaDto: UpdateCompetenciaDto,
+  ) {
+    return this.competenciaService.update(id, updateCompetenciaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.competenciaService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.competenciaService.remove(id);
   }
 }

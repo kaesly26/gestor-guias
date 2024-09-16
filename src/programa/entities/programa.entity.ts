@@ -5,9 +5,9 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany} from 'typeorm';
 @Entity()
 export class Programa {
   @PrimaryGeneratedColumn()
-  id: number;
+  ID: number;
 
-  @Column({ length: 20 })
+  @Column({ length: 20, unique: true })
   Codigo: string;
 
   @Column({ length: 80 })
