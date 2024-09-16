@@ -15,7 +15,7 @@ import { Competencia } from './competencia/entities/competencia.entity';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: 'nuevaconexion',
+      password: '',
       database: 'gestor_guias',
       entities: [Programa, Competencia],
       synchronize: true,

@@ -4,10 +4,11 @@ import { CompetenciaService } from './competencia.service';
 import { CompetenciaController } from './competencia.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Competencia } from './entities/competencia.entity';
+import { ProgramaModule } from 'src/programa/programa.module';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Competencia])],
+  imports: [TypeOrmModule.forFeature([Competencia]), ProgramaModule],
   controllers: [CompetenciaController],
   providers: [CompetenciaService],
 })

@@ -1,28 +1,45 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCompetenciaDto } from './dto/create-competencia.dto';
 import { UpdateCompetenciaDto } from './dto/update-competencia.dto';
 import { Competencia } from './entities/competencia.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Programa } from 'src/programa/entities/programa.entity';
 
 @Injectable()
 export class CompetenciaService {
   constructor(
     @InjectRepository(Competencia)
     private competenciaRepository: Repository<Competencia>,
+    @InjectRepository(Programa)
+    private programaRepository: Repository<Programa>,
   ) {}
 
   async create(
     createCompetenciaDto: CreateCompetenciaDto,
   ): Promise<Competencia> {
-    try {
-      const competencia =
-        this.competenciaRepository.create(createCompetenciaDto);
-      return await this.competenciaRepository.save(competencia);
-    } catch (error) {
-      throw new InternalServerErrorException('Error al crear la competencia');
+    // Buscar el Programa con el ID proporcionado
+    const programa = await this.programaRepository.findOne({
+      where: { ID: createCompetenciaDto.id_programa },
+    });
+    if (!programa) {
+      throw new Error('Programa no encontrado');
     }
+
+    // Crear una nueva Competencia y asignar el Programa
+    const competencia = new Competencia();
+    competencia.Codigo = createCompetenciaDto.Codigo;
+    competencia.Nombre = createCompetenciaDto.Nombre;
+    competencia.Descripcion = createCompetenciaDto.Descripcion;
+    competencia.Tipo = createCompetenciaDto.Tipo;
+    competencia.programa = programa; // Asignar el Programa encontrado
+
+    return this.competenciaRepository.save(competencia);
   }
   async findAll(): Promise<Competencia[]> {
     return this.competenciaRepository.find();
@@ -43,7 +60,9 @@ export class CompetenciaService {
   ): Promise<Competencia> {
     const comp = await this.competenciaRepository.findOneBy({ Codigo });
     if (!comp) {
-      throw new NotFoundException(`competencia with Codigo ${Codigo} not found`);
+      throw new NotFoundException(
+        `competencia with Codigo ${Codigo} not found`,
+      );
     }
 
     Object.assign(comp, updateProgramaDto);
