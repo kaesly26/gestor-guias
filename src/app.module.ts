@@ -7,6 +7,8 @@ import { ProgramaModule } from './programa/programa.module';
 import { Programa } from './programa/entities/programa.entity';
 import { CompetenciaModule } from './competencia/competencia.module';
 import { Competencia } from './competencia/entities/competencia.entity';
+import { ResultadoModule } from './resultado/resultado.module';
+import { Resultado } from './resultado/entities/resultado.entity';
 
 @Module({
   imports: [
@@ -15,13 +17,14 @@ import { Competencia } from './competencia/entities/competencia.entity';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: '',
+      password: 'nuevaconexion',
       database: 'gestor_guias',
-      entities: [Programa, Competencia],
+      entities: [Programa, Competencia, Resultado],
       synchronize: true,
     }),
     ProgramaModule,
     CompetenciaModule,
+    ResultadoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

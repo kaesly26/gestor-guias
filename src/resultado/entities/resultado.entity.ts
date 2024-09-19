@@ -1,9 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { Competencia } from 'src/competencia/entities/competencia.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity()
-export class Programa {
+export class Resultado {
   @PrimaryGeneratedColumn()
   ID: number;
 
@@ -11,12 +11,12 @@ export class Programa {
   Codigo: string;
 
   @Column({ length: 80 })
-  Nombre: string; 
+  Nombre: string;
 
   @Column({ length: 100 })
   Descripcion: string;
 
-  @OneToMany(() => Competencia, (competencia) => competencia.programa)
-  competencias: Competencia[];
+  @ManyToOne(() => Competencia, competencia => competencia.resultados)
+  @JoinColumn({ name: 'id_competencia' })
+  competencia: Competencia;
 }
-

@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 import {
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateCompetenciaDto } from './dto/create-competencia.dto';

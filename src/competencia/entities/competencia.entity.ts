@@ -1,11 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { Programa } from 'src/programa/entities/programa.entity';
+import { Resultado } from 'src/resultado/entities/resultado.entity';
 import { 
   Entity, 
   Column, 
   PrimaryGeneratedColumn, 
   ManyToOne, 
-  JoinColumn 
+  JoinColumn, 
+  OneToMany
 } from 'typeorm';
 
 @Entity()
@@ -32,4 +34,7 @@ export class Competencia {
   @ManyToOne(() => Programa, (programa) => programa.competencias)
   @JoinColumn({ name: 'id_programa' })
   programa: Programa;
+
+  @OneToMany(() => Resultado, (resultado) => resultado.competencia)
+  resultados: Resultado[];
 }

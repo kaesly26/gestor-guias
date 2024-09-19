@@ -11,5 +11,6 @@ import { ProgramaModule } from 'src/programa/programa.module';
   imports: [TypeOrmModule.forFeature([Competencia]), ProgramaModule],
   controllers: [CompetenciaController],
   providers: [CompetenciaService],
+  exports: [TypeOrmModule],
 })
 export class CompetenciaModule {}
