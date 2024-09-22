@@ -5,9 +5,8 @@ import {
   Entity, 
   Column, 
   PrimaryGeneratedColumn, 
-  ManyToOne, 
-  JoinColumn, 
-  OneToMany
+  OneToMany,
+  ManyToMany
 } from 'typeorm';
 
 @Entity()
@@ -31,9 +30,8 @@ export class Competencia {
   })
   Tipo: string;
 
-  @ManyToOne(() => Programa, (programa) => programa.competencias)
-  @JoinColumn({ name: 'id_programa' })
-  programa: Programa;
+  @ManyToMany(() => Programa, (programa) => programa.competencias)
+  programas: Programa[];
 
   @OneToMany(() => Resultado, (resultado) => resultado.competencia)
   resultados: Resultado[];

@@ -1,6 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { Competencia } from 'src/competencia/entities/competencia.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany} from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 
 @Entity()
 export class Programa {
@@ -11,12 +17,12 @@ export class Programa {
   Codigo: string;
 
   @Column({ length: 80 })
-  Nombre: string; 
+  Nombre: string;
 
   @Column({ length: 100 })
   Descripcion: string;
 
-  @OneToMany(() => Competencia, (competencia) => competencia.programa)
+  @ManyToMany(() => Competencia, (competencia) => competencia.programas)
+  @JoinTable()
   competencias: Competencia[];
 }
-

@@ -43,4 +43,16 @@ export class ProgramaController {
   remove(@Param('id') id: string) {
     return this.programaService.remove(id);
   }
+  // Endpoint para agregar una competencia a un programa
+  @Post('add-competencia')
+  async addCompetenciaToPrograma(
+    @Body('programaId') programaId: number,
+    @Body('competenciaId') competenciaId: number,
+  ) {
+    // Llama al servicio para agregar la competencia al programa
+    return this.programaService.addCompetenciaToPrograma(
+      programaId,
+      competenciaId,
+    );
+  }
 }

@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 import {
-  IsInt,
   IsString,
   IsOptional,
   IsEnum,
@@ -29,7 +28,4 @@ export class CreateCompetenciaDto {
   @IsEnum(TraversalType)
   Tipo: TraversalType;
 
-  @IsNotEmpty()
-  @IsInt()
-  id_programa: number;
 }

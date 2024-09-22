@@ -5,12 +5,15 @@ import { UpdateProgramaDto } from './dto/update-programa.dto';
 import { Programa } from './entities/programa.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Competencia } from 'src/competencia/entities/competencia.entity';
 
 @Injectable()
 export class ProgramaService {
   constructor(
     @InjectRepository(Programa)
     private programaRepository: Repository<Programa>,
+    @InjectRepository(Competencia)
+    private competenciaRepository: Repository<Competencia>
   ) {}
 
   async create(createProgramaDto: CreateProgramaDto): Promise<Programa> {
@@ -46,5 +49,29 @@ export class ProgramaService {
 
   async remove(Codigo: string): Promise<void> {
     await this.programaRepository.delete(Codigo);
+  }
+  // Método para agregar una competencia a un programa
+  async addCompetenciaToPrograma(programaId: number, competenciaId: number) {
+    // Obtener el programa con sus competencias relacionadas
+    const programa = await this.programaRepository.findOne({
+      where: { ID: programaId },
+      relations: ['competencias'], // Incluye la relación con competencias
+    });
+
+    // Obtener la competencia por su ID
+    const competencia = await this.competenciaRepository.findOneBy({
+      ID: competenciaId,
+    });
+
+    // Verificar si ambos existen
+    if (!programa || !competencia) {
+      throw new NotFoundException('Programa o Competencia no encontrados');
+    }
+
+    // Agregar la competencia al array de competencias del programa
+    programa.competencias.push(competencia);
+
+    // Guardar el programa con la nueva relación
+    return await this.programaRepository.save(programa);
   }
 }
