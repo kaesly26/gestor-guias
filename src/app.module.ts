@@ -9,6 +9,8 @@ import { CompetenciaModule } from './competencia/competencia.module';
 import { Competencia } from './competencia/entities/competencia.entity';
 import { ResultadoModule } from './resultado/resultado.module';
 import { Resultado } from './resultado/entities/resultado.entity';
+import { ArchivosModule } from './archivos/archivos.module';
+import { Archivo } from './archivos/entities/archivo.entity';
 
 @Module({
   imports: [
@@ -19,12 +21,13 @@ import { Resultado } from './resultado/entities/resultado.entity';
       username: 'root',
       password: 'nuevaconexion',
       database: 'gestor_guias',
-      entities: [Programa, Competencia, Resultado],
+      entities: [Programa, Competencia, Resultado, Archivo],
       synchronize: true,
     }),
     ProgramaModule,
     CompetenciaModule,
     ResultadoModule,
+    ArchivosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -22,7 +22,7 @@ export class ProgramaService {
   }
 
   async findAll(): Promise<Programa[]> {
-    return this.programaRepository.find();
+    return this.programaRepository.find({ relations: ['competencias'] });
   }
 
   findOne(Codigo: string): Promise<Programa | null> {

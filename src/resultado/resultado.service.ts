@@ -36,7 +36,7 @@ export class ResultadoService {
   }
 
   async findAll(): Promise<Resultado[]> {
-    return this.ResultadoRepository.find();
+    return this.ResultadoRepository.find({ relations: ['archivos'] });
   }
 
   findOne(Codigo: string): Promise<Resultado | null> {

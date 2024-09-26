@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
+import { Archivo } from 'src/archivos/entities/archivo.entity';
 import { Competencia } from 'src/competencia/entities/competencia.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn , OneToMany} from 'typeorm';
 
 @Entity()
 export class Resultado {
@@ -16,7 +17,10 @@ export class Resultado {
   @Column({ length: 100 })
   Descripcion: string;
 
-  @ManyToOne(() => Competencia, competencia => competencia.resultados)
+  @ManyToOne(() => Competencia, (competencia) => competencia.resultados)
   @JoinColumn({ name: 'id_competencia' })
   competencia: Competencia;
+
+  @OneToMany(() => Archivo, (archivo) => archivo.resultado)
+  archivos: Archivo[];
 }

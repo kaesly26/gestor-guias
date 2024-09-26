@@ -44,7 +44,7 @@ export class CompetenciaService {
     // return this.competenciaRepository.save(competencia);
   }
   async findAll(): Promise<Competencia[]> {
-    return this.competenciaRepository.find();
+    return this.competenciaRepository.find({ relations: ['resultados'] });
   }
 
   findOne(Codigo: string): Promise<Competencia | null> {
