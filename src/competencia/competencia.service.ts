@@ -24,24 +24,6 @@ export class CompetenciaService {
   ): Promise<Competencia> {
     const comp = this.competenciaRepository.create(createCompetenciaDto);
     return this.competenciaRepository.save(comp);
-
-    // Buscar el Programa con el ID proporcionado
-    // const programa = await this.programaRepository.findOne({
-    //   where: { ID: createCompetenciaDto.id_programa },
-    // });
-    // if (!programa) {
-    //   throw new Error('Programa no encontrado');
-    // }
-
-    // // Crear una nueva Competencia y asignar el Programa
-    // const competencia = new Competencia();
-    // competencia.Codigo = createCompetenciaDto.Codigo;
-    // competencia.Nombre = createCompetenciaDto.Nombre;
-    // competencia.Descripcion = createCompetenciaDto.Descripcion;
-    // competencia.Tipo = createCompetenciaDto.Tipo;
-    // competencia.programa = programa; // Asignar el Programa encontrado
-
-    // return this.competenciaRepository.save(competencia);
   }
   async findAll(): Promise<Competencia[]> {
     return this.competenciaRepository.find({ relations: ['resultados'] });
@@ -71,7 +53,7 @@ export class CompetenciaService {
     return this.competenciaRepository.save(comp);
   }
 
-  async remove(id: number): Promise<void> {
-    await this.competenciaRepository.delete(id);
+  async remove(Codigo: string): Promise<void> {
+    await this.competenciaRepository.delete({ Codigo });
   }
 }

@@ -39,8 +39,8 @@ export class CompetenciaController {
     return this.competenciaService.update(id, updateCompetenciaDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.competenciaService.remove(id);
+  @Delete(':Codigo')
+  remove(@Param('Codigo') Codigo: string) {
+    return this.competenciaService.remove(Codigo);
   }
 }
