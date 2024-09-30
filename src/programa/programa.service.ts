@@ -48,8 +48,14 @@ export class ProgramaService {
   }
 
   async remove(Codigo: string): Promise<void> {
-    await this.programaRepository.delete(Codigo);
+    const result = await this.programaRepository.delete({ Codigo });
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        `Programa con código ${Codigo} no encontrado`,
+      );
+    }
   }
+  
   // Método para agregar una competencia a un programa
   async addCompetenciaToPrograma(programaId: number, competenciaId: number) {
     // Obtener el programa con sus competencias relacionadas

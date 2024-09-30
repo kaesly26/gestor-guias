@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArchivoDto } from './dto/create-archivo.dto';
 import { UpdateArchivoDto } from './dto/update-archivo.dto';
 import { Archivo } from './entities/archivo.entity';
@@ -17,36 +17,49 @@ export class ArchivosService {
   ) {}
 
   async create(createArchivoDto: CreateArchivoDto) {
-     const resul = await this.ResultadoRepository.findOne({
-       where: { ID: createArchivoDto.id_resultado },
-     });
-     if (!resul) {
-       throw new Error('Programa no encontrado');
-     }
-     const archivo = new Archivo();
-      archivo.Codigo = createArchivoDto.Codigo;
-      archivo.Nombre = createArchivoDto.Nombre;
-      archivo.Fecha_Creacion = createArchivoDto.Fecha_Creacion;
-      archivo.Tamaño = createArchivoDto.Tamaño;
-      archivo.Link = createArchivoDto.Link;
-      archivo.resultado = resul; // Asignar el Programa encontrado
+    const resul = await this.ResultadoRepository.findOne({
+      where: { ID: createArchivoDto.id_resultado },
+    });
+    if (!resul) {
+      throw new Error('Programa no encontrado');
+    }
+    const archivo = new Archivo();
+    archivo.Codigo = createArchivoDto.Codigo;
+    archivo.Nombre = createArchivoDto.Nombre;
+    archivo.Tamaño = createArchivoDto.Tamaño;
+    archivo.Link = createArchivoDto.Link;
+    archivo.resultado = resul; // Asignar el Programa encontrado
 
-     return this.archivoRepository.save(archivo);
+    return this.archivoRepository.save(archivo);
   }
 
-  findAll() {
-    return `This action returns all archivos`;
+  async findAll(): Promise<Archivo[]> {
+    return this.archivoRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} archivo`;
+  findOne(Codigo: string): Promise<Archivo | null> {
+    const programa = this.archivoRepository.findOneBy({ Codigo });
+    if (!programa) {
+      throw new NotFoundException(`archivo not found`);
+    } else {
+      return programa;
+    }
   }
 
-  update(id: number, updateArchivoDto: UpdateArchivoDto) {
-    return `This action updates a #${id} archivo`;
+  async update(
+    Codigo: string,
+    updateArchivoDto: UpdateArchivoDto,
+  ): Promise<Archivo> {
+    const programa = await this.archivoRepository.findOneBy({ Codigo });
+    if (!programa) {
+      throw new NotFoundException(`archivo with Codigo ${Codigo} not found`);
+    }
+
+    Object.assign(programa, updateArchivoDto);
+    return this.archivoRepository.save(programa);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} archivo`;
+  async remove(Codigo: string): Promise<void> {
+    await this.archivoRepository.delete(Codigo);
   }
 }

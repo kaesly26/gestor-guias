@@ -1,12 +1,14 @@
 /* eslint-disable prettier/prettier */
 import { Programa } from 'src/programa/entities/programa.entity';
 import { Resultado } from 'src/resultado/entities/resultado.entity';
-import { 
-  Entity, 
-  Column, 
-  PrimaryGeneratedColumn, 
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
   OneToMany,
-  ManyToMany
+  ManyToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -35,4 +37,10 @@ export class Competencia {
 
   @OneToMany(() => Resultado, (resultado) => resultado.competencia)
   resultados: Resultado[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }

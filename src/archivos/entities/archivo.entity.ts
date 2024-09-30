@@ -4,6 +4,7 @@ import {
   Entity,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
@@ -20,9 +21,6 @@ export class Archivo {
   @Column({ length: 80 })
   Nombre: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  Fecha_Creacion: Date;
-
   @Column()
   Tamaño: string;
 
@@ -32,4 +30,10 @@ export class Archivo {
   @ManyToOne(() => Resultado, (resultado) => resultado.archivos)
   @JoinColumn({ name: 'id_resultado' })
   resultado: Resultado;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }

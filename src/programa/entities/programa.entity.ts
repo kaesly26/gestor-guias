@@ -6,6 +6,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -25,4 +27,10 @@ export class Programa {
   @ManyToMany(() => Competencia, (competencia) => competencia.programas)
   @JoinTable()
   competencias: Competencia[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }

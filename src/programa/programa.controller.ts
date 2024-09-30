@@ -39,9 +39,9 @@ export class ProgramaController {
     return this.programaService.update(id, updateProgramaDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.programaService.remove(id);
+  @Delete(':Codigo')
+  remove(@Param('Codigo') Codigo: string) {
+    return this.programaService.remove(Codigo);
   }
   // Endpoint para agregar una competencia a un programa
   @Post('add-competencia')

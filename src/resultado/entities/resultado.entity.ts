@@ -1,7 +1,16 @@
 /* eslint-disable prettier/prettier */
 import { Archivo } from 'src/archivos/entities/archivo.entity';
 import { Competencia } from 'src/competencia/entities/competencia.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn , OneToMany} from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Resultado {
@@ -23,4 +32,10 @@ export class Resultado {
 
   @OneToMany(() => Archivo, (archivo) => archivo.resultado)
   archivos: Archivo[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 }
