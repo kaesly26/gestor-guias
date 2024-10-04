@@ -8,15 +8,12 @@ import { UpdateCompetenciaDto } from './dto/update-competencia.dto';
 import { Competencia } from './entities/competencia.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-// import { Programa } from 'src/programa/entities/programa.entity';
 
 @Injectable()
 export class CompetenciaService {
   constructor(
     @InjectRepository(Competencia)
     private competenciaRepository: Repository<Competencia>,
-    // @InjectRepository(Programa)
-    // private programaRepository: Repository<Programa>,
   ) {}
 
   async create(
@@ -56,4 +53,5 @@ export class CompetenciaService {
   async remove(Codigo: string): Promise<void> {
     await this.competenciaRepository.delete({ Codigo });
   }
+
 }

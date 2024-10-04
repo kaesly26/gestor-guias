@@ -36,7 +36,7 @@ export class ResultadoService {
   }
 
   async findAll(): Promise<Resultado[]> {
-    return this.ResultadoRepository.find({ relations: ['archivos'] });
+    return this.ResultadoRepository.find({ relations: ['competencia','archivos'] });
   }
 
   findOne(Codigo: string): Promise<Resultado | null> {
@@ -62,6 +62,6 @@ export class ResultadoService {
   }
 
   async remove(Codigo: string): Promise<void> {
-    await this.ResultadoRepository.delete(Codigo);
+    await this.ResultadoRepository.delete({Codigo});
   }
 }

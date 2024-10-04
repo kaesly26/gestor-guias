@@ -43,4 +43,9 @@ export class CompetenciaController {
   remove(@Param('Codigo') Codigo: string) {
     return this.competenciaService.remove(Codigo);
   }
+
+  @Get('lista')
+  async getCompetencias() {
+    return this.competenciaService.findAll();
+  }
 }

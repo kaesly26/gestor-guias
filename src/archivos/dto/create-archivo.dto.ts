@@ -8,8 +8,6 @@ export class CreateArchivoDto {
   @IsNotEmpty()
   @IsString()
   Nombre: string;
-  @IsNotEmpty()
-  Fecha_Creacion: Date;
 
   @IsNotEmpty()
   @IsString()

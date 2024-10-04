@@ -39,8 +39,8 @@ export class ResultadoController {
     return this.resultadoService.update(id, updateResultadoDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.resultadoService.remove(id);
+  @Delete(':Codigo')
+  remove(@Param('Codigo') Codigo: string) {
+    return this.resultadoService.remove(Codigo);
   }
 }
