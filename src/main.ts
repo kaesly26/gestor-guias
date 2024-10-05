@@ -10,6 +10,7 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
+  app.useLogger(['log', 'error', 'warn', 'debug', 'verbose']);
   await app.listen(3000);
 }
 bootstrap();

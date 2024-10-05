@@ -11,6 +11,7 @@ import {
 import { ProgramaService } from './programa.service';
 import { CreateProgramaDto } from './dto/create-programa.dto';
 import { UpdateProgramaDto } from './dto/update-programa.dto';
+import { Programa } from './entities/programa.entity';
 
 @Controller('programa')
 export class ProgramaController {
@@ -26,9 +27,9 @@ export class ProgramaController {
     return this.programaService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.programaService.findOne(id);
+  @Get(':Codigo')
+  findOne(@Param('Codigo') Codigo: string) {
+    return this.programaService.findOne(Codigo);
   }
 
   @Patch(':id')
@@ -47,12 +48,19 @@ export class ProgramaController {
   @Post('add-competencia')
   async addCompetenciaToPrograma(
     @Body('programaId') programaId: number,
-    @Body('competenciaId') competenciaId: number,
+    @Body('competenciaIds') competenciaIds: number[],
   ) {
     // Llama al servicio para agregar la competencia al programa
     return this.programaService.addCompetenciaToPrograma(
       programaId,
-      competenciaId,
+      competenciaIds,
     );
+  }
+  //obtner el listado de relaciones
+  @Get('lista-relacion')
+  async getLista(): Promise<Programa[]> {
+    const programas = await this.programaService.getLista();
+    console.log('Programas:', programas);
+    return programas.length > 0 ? programas : [];
   }
 }

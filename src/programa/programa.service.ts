@@ -13,7 +13,7 @@ export class ProgramaService {
     @InjectRepository(Programa)
     private programaRepository: Repository<Programa>,
     @InjectRepository(Competencia)
-    private competenciaRepository: Repository<Competencia>
+    private competenciaRepository: Repository<Competencia>,
   ) {}
 
   async create(createProgramaDto: CreateProgramaDto): Promise<Programa> {
@@ -55,29 +55,42 @@ export class ProgramaService {
       );
     }
   }
-  
-  // Método para agregar una competencia a un programa
-  async addCompetenciaToPrograma(programaId: number, competenciaId: number) {
-    // Obtener el programa con sus competencias relacionadas
+
+  // Método para agregar competencias a un programa
+  async addCompetenciaToPrograma(programaId: number, competenciaIds: number[]) {
     const programa = await this.programaRepository.findOne({
       where: { ID: programaId },
-      relations: ['competencias'], // Incluye la relación con competencias
+      relations: ['competencias'],
     });
-
-    // Obtener la competencia por su ID
-    const competencia = await this.competenciaRepository.findOneBy({
-      ID: competenciaId,
-    });
-
-    // Verificar si ambos existen
-    if (!programa || !competencia) {
-      throw new NotFoundException('Programa o Competencia no encontrados');
+    if (!programa) {
+      throw new NotFoundException('Programa no encontrado');
     }
 
-    // Agregar la competencia al array de competencias del programa
-    programa.competencias.push(competencia);
+    for (const competenciaId of competenciaIds) {
+      const competencia = await this.competenciaRepository.findOneBy({
+        ID: competenciaId,
+      });
 
-    // Guardar el programa con la nueva relación
+      if (!competencia) {
+        throw new NotFoundException(
+          `Competencia con ID ${competenciaId} no encontrada`,
+        );
+      }
+
+      if (!programa.competencias.some((c) => c.ID === competencia.ID)) {
+        programa.competencias.push(competencia);
+      }
+    }
+
     return await this.programaRepository.save(programa);
+  }
+
+  async getLista(): Promise<Programa[]> {
+    console.log('Ejecutando getLista en el servicio');
+    const programas = await this.programaRepository.find({
+      relations: ['competencias'],
+    });
+    console.log('los programas en la tabla son:',programas);
+    return programas;
   }
 }
