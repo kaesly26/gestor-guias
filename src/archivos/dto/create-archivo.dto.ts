@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { IsString, IsNotEmpty , IsNumber} from 'class-validator';
+import { IsString, IsNotEmpty , IsNumber, IsOptional} from 'class-validator';
 export class CreateArchivoDto {
   @IsNotEmpty()
   @IsString()
@@ -13,9 +13,9 @@ export class CreateArchivoDto {
   @IsString()
   Tamaño: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  Link: string;
+  Link?: string;
 
   @IsNotEmpty()
   @IsNumber()

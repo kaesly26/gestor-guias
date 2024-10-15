@@ -85,12 +85,5 @@ export class ProgramaService {
     return await this.programaRepository.save(programa);
   }
 
-  async getLista(): Promise<Programa[]> {
-    console.log('Ejecutando getLista en el servicio');
-    const programas = await this.programaRepository.find({
-      relations: ['competencias'],
-    });
-    console.log('los programas en la tabla son:',programas);
-    return programas;
-  }
+
 }

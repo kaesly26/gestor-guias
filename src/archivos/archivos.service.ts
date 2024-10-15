@@ -1,40 +1,67 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateArchivoDto } from './dto/create-archivo.dto';
 import { UpdateArchivoDto } from './dto/update-archivo.dto';
 import { Archivo } from './entities/archivo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Resultado } from 'src/resultado/entities/resultado.entity';
+import { v2 as cloudinary} from 'cloudinary';
 
 @Injectable()
 export class ArchivosService {
   constructor(
     @InjectRepository(Archivo)
     private archivoRepository: Repository<Archivo>,
-    @InjectRepository(Resultado)
-    private ResultadoRepository: Repository<Resultado>,
-  ) {}
-
-  async create(createArchivoDto: CreateArchivoDto) {
-    const resul = await this.ResultadoRepository.findOne({
-      where: { ID: createArchivoDto.id_resultado },
+  ) {
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
     });
-    if (!resul) {
-      throw new Error('Programa no encontrado');
-    }
-    const archivo = new Archivo();
-    archivo.Codigo = createArchivoDto.Codigo;
-    archivo.Nombre = createArchivoDto.Nombre;
-    archivo.Tamaño = createArchivoDto.Tamaño;
-    archivo.Link = createArchivoDto.Link;
-    archivo.resultado = resul; // Asignar el Programa encontrado
+  }
 
+  // async uploadToCloudinary(
+  //   file: Express.Multer.File,
+  // ): Promise<UploadApiResponse> {
+  //   return new Promise((resolve, reject) => {
+  //     cloudinary.uploader
+  //       .upload_stream({ resource_type: 'auto' }, (error, result) => {
+  //         if (error) return reject(error);
+  //         resolve(result);
+  //       })
+  //       .end(file.buffer);
+  //   });
+  // }
+
+  async create(
+    createArchivoDto: CreateArchivoDto,
+    file: Express.Multer.File,
+  ): Promise<Archivo> {
+    if (!file) {
+      throw new BadRequestException('No se ha proporcionado un archivo.');
+    }
+    const result = await cloudinary.uploader.upload(file.path, {
+      resource_type: 'raw',
+      public_id: createArchivoDto.Codigo,
+    });
+    const archivo = this.archivoRepository.create({
+      ...createArchivoDto,
+      Link: result.secure_url,
+    });
     return this.archivoRepository.save(archivo);
+    // const uploadResult = await this.uploadToCloudinary(file);
+    // createArchivoDto.Link = uploadResult.secure_url; // Guarda la URL de Cloudinary
+
+    // const archivo = this.archivoRepository.create(createArchivoDto);
+    // return this.archivoRepository.save(archivo);
   }
 
   async findAll(): Promise<Archivo[]> {
-    return this.archivoRepository.find({ relations: ['resultado']});
+    return this.archivoRepository.find({ relations: ['resultado'] });
   }
 
   findOne(Codigo: string): Promise<Archivo | null> {

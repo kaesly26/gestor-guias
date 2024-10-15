@@ -11,9 +11,13 @@ import { ResultadoModule } from './resultado/resultado.module';
 import { Resultado } from './resultado/entities/resultado.entity';
 import { ArchivosModule } from './archivos/archivos.module';
 import { Archivo } from './archivos/entities/archivo.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',

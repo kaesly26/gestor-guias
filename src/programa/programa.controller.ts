@@ -11,7 +11,6 @@ import {
 import { ProgramaService } from './programa.service';
 import { CreateProgramaDto } from './dto/create-programa.dto';
 import { UpdateProgramaDto } from './dto/update-programa.dto';
-import { Programa } from './entities/programa.entity';
 
 @Controller('programa')
 export class ProgramaController {
@@ -55,12 +54,5 @@ export class ProgramaController {
       programaId,
       competenciaIds,
     );
-  }
-  //obtner el listado de relaciones
-  @Get('lista-relacion')
-  async getLista(): Promise<Programa[]> {
-    const programas = await this.programaService.getLista();
-    console.log('Programas:', programas);
-    return programas.length > 0 ? programas : [];
   }
 }
