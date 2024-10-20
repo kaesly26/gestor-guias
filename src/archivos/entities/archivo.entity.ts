@@ -15,7 +15,7 @@ export class Archivo {
   @PrimaryGeneratedColumn()
   ID: number;
 
-  @Column({ length: 20, unique: true })
+  @Column({ length: 20, unique: true, type: 'varchar' })
   Codigo: string;
 
   @Column({ length: 80 })
@@ -26,6 +26,9 @@ export class Archivo {
 
   @Column()
   Link: string;
+
+  @Column({ length: 100 })
+  public_id: string
 
   @ManyToOne(() => Resultado, (resultado) => resultado.archivos)
   @JoinColumn({ name: 'id_resultado' })

@@ -1,15 +1,11 @@
 /* eslint-disable prettier/prettier */
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArchivoDto } from './dto/create-archivo.dto';
 import { UpdateArchivoDto } from './dto/update-archivo.dto';
 import { Archivo } from './entities/archivo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { v2 as cloudinary} from 'cloudinary';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 
 @Injectable()
 export class ArchivosService {
@@ -24,40 +20,33 @@ export class ArchivosService {
     });
   }
 
-  // async uploadToCloudinary(
-  //   file: Express.Multer.File,
-  // ): Promise<UploadApiResponse> {
-  //   return new Promise((resolve, reject) => {
-  //     cloudinary.uploader
-  //       .upload_stream({ resource_type: 'auto' }, (error, result) => {
-  //         if (error) return reject(error);
-  //         resolve(result);
-  //       })
-  //       .end(file.buffer);
-  //   });
-  // }
-
-  async create(
-    createArchivoDto: CreateArchivoDto,
+  async uploadToCloudinary(
     file: Express.Multer.File,
-  ): Promise<Archivo> {
-    if (!file) {
-      throw new BadRequestException('No se ha proporcionado un archivo.');
-    }
-    const result = await cloudinary.uploader.upload(file.path, {
-      resource_type: 'raw',
-      public_id: createArchivoDto.Codigo,
+  ): Promise<UploadApiResponse> {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          { resource_type: 'raw', upload_preset: 'GuiasSena' },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        )
+        .end(file.buffer);
     });
-    const archivo = this.archivoRepository.create({
-      ...createArchivoDto,
-      Link: result.secure_url,
-    });
-    return this.archivoRepository.save(archivo);
-    // const uploadResult = await this.uploadToCloudinary(file);
-    // createArchivoDto.Link = uploadResult.secure_url; // Guarda la URL de Cloudinary
+  }
 
-    // const archivo = this.archivoRepository.create(createArchivoDto);
-    // return this.archivoRepository.save(archivo);
+  async create(createArchivoDto: CreateArchivoDto): Promise<Archivo> {
+    console.log('datos', createArchivoDto);
+    try {
+      const archivo = this.archivoRepository.create({
+        ...createArchivoDto,
+        resultado: { ID: createArchivoDto.id_resultado },
+      });
+      return this.archivoRepository.save(archivo);
+    } catch (error) {
+      console.error('error al subir el registro');
+    }
   }
 
   async findAll(): Promise<Archivo[]> {
@@ -87,6 +76,27 @@ export class ArchivosService {
   }
 
   async remove(Codigo: string): Promise<void> {
-    await this.archivoRepository.delete(Codigo);
+    console.log('codigo', Codigo);
+    const archivo = await this.archivoRepository.findOneBy({ Codigo });
+    if (!archivo) {
+      throw new NotFoundException(
+        `El archivo con código ${Codigo} no fue encontrado.`,
+      );
+    }
+    try {
+      await cloudinary.uploader.destroy(archivo.public_id, {
+        resource_type: 'raw',
+      });
+      console.log('se elimino el archivo')
+    } catch (error) {
+      console.error('No se elimino el archivo de clouidnary')
+    }
+    try {
+      await this.archivoRepository.delete({ Codigo });
+      console.log('se elimino el registro')
+    } catch (error) {
+      console.error('no se elimino el registro')
+    }
+   
   }
 }

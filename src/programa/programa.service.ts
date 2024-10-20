@@ -85,5 +85,60 @@ export class ProgramaService {
     return await this.programaRepository.save(programa);
   }
 
+  async deleteAllCompetenciasFromPrograma(programaId: number): Promise<void> {
+    const programa = await this.programaRepository.findOne({
+      where: { ID: programaId },
+      relations: ['competencias'],
+    });
 
+    if (!programa) {
+      throw new NotFoundException('Programa no encontrado');
+    }
+
+    // Verificar si el programa tiene competencias asociadas
+    if (programa.competencias.length === 0) {
+      console.log('No hay competencias para eliminar');
+      return;
+    }
+
+    // Eliminar todas las relaciones
+    await this.programaRepository
+      .createQueryBuilder()
+      .relation(Programa, 'competencias')
+      .of(programa)
+      .remove(programa.competencias);
+
+    console.log(
+      `Se eliminaron todas las competencias del programa con ID=${programaId}`,
+    );
+  }
+
+  // async deleteCompetenciaFromPrograma(
+  //   programaId: number,
+  //   competenciaId: number,
+  // ): Promise<void> {
+  //   const programa = await this.programaRepository.findOne({
+  //     where: { ID: programaId },
+  //     relations: ['competencias'],
+  //   });
+
+  //   if (!programa) {
+  //     throw new NotFoundException('Programa no encontrado');
+  //   }
+
+  //   const competenciaIndex = programa.competencias.findIndex(
+  //     (c) => c.ID === competenciaId,
+  //   );
+  //   if (competenciaIndex === -1) {
+  //     throw new NotFoundException(
+  //       `Competencia con ID ${competenciaId} no está asociada a este programa`,
+  //     );
+  //   }
+
+  //   await this.programaRepository
+  //     .createQueryBuilder()
+  //     .relation(Programa, 'competencias')
+  //     .of(programaId)
+  //     .remove(competenciaId);
+  // }
 }

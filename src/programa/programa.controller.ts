@@ -31,18 +31,14 @@ export class ProgramaController {
     return this.programaService.findOne(Codigo);
   }
 
-  @Patch(':id')
+  @Patch(':Codigo')
   update(
-    @Param('id') id: string,
+    @Param('Codigo') Codigo: string,
     @Body() updateProgramaDto: UpdateProgramaDto,
   ) {
-    return this.programaService.update(id, updateProgramaDto);
+    return this.programaService.update(Codigo, updateProgramaDto);
   }
 
-  @Delete(':Codigo')
-  remove(@Param('Codigo') Codigo: string) {
-    return this.programaService.remove(Codigo);
-  }
   // Endpoint para agregar una competencia a un programa
   @Post('add-competencia')
   async addCompetenciaToPrograma(
@@ -54,5 +50,34 @@ export class ProgramaController {
       programaId,
       competenciaIds,
     );
+  }
+
+  @Delete('eliminar-todas-relaciones')
+  deleteAllCompetenciasFromPrograma(@Body() body: { programaId: number }) {
+    console.log(
+      `Eliminar todas las relaciones del programaId = ${body.programaId}`,
+    );
+    return this.programaService.deleteAllCompetenciasFromPrograma(
+      body.programaId,
+    );
+  }
+
+  // @Delete('eliminar-relacion')
+  // deleteCompetenciaFromPrograma(
+  //   @Body('programaId') programaId: number,
+  //   @Body('competenciaId') competenciaId: number,
+  // ) {
+  //   console.log(
+  //     `Eliminar relación: programaId=${programaId}, competenciaId=${competenciaId}`,
+  //   );
+  //   return this.programaService.deleteCompetenciaFromPrograma(
+  //     programaId,
+  //     competenciaId,
+  //   );
+  // }
+  @Delete(':Codigo')
+  remove(@Param('Codigo') Codigo: string) {
+    console.log('estoy aqui :(');
+    return this.programaService.remove(Codigo);
   }
 }

@@ -31,12 +31,12 @@ export class CompetenciaController {
     return this.competenciaService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch(':Codigo')
   update(
-    @Param('id') id: string,
+    @Param('Codigo') Codigo: string,
     @Body() updateCompetenciaDto: UpdateCompetenciaDto,
   ) {
-    return this.competenciaService.update(id, updateCompetenciaDto);
+    return this.competenciaService.update(Codigo, updateCompetenciaDto);
   }
 
   @Delete(':Codigo')
