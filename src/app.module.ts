@@ -4,14 +4,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProgramaModule } from './programa/programa.module';
-import { Programa } from './programa/entities/programa.entity';
 import { CompetenciaModule } from './competencia/competencia.module';
-import { Competencia } from './competencia/entities/competencia.entity';
 import { ResultadoModule } from './resultado/resultado.module';
-import { Resultado } from './resultado/entities/resultado.entity';
 import { ArchivosModule } from './archivos/archivos.module';
-import { Archivo } from './archivos/entities/archivo.entity';
 import { ConfigModule } from '@nestjs/config';
+import { UsuariosModule } from './usuarios/usuarios.module';
+import { RolesModule } from './roles/roles.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,13 +24,16 @@ import { ConfigModule } from '@nestjs/config';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [Programa, Competencia, Resultado, Archivo],
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
     ProgramaModule,
     CompetenciaModule,
     ResultadoModule,
     ArchivosModule,
+    UsuariosModule,
+    RolesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

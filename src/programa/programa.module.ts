@@ -10,6 +10,6 @@ import { Competencia } from 'src/competencia/entities/competencia.entity';
   imports: [TypeOrmModule.forFeature([Programa, Competencia])],
   controllers: [ProgramaController],
   providers: [ProgramaService],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, ProgramaService],
 })
 export class ProgramaModule {}

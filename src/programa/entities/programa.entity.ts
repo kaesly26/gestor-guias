@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Competencia } from 'src/competencia/entities/competencia.entity';
+import { Usuario } from 'src/usuarios/entities/usuario.entity';
 import {
   Entity,
   Column,
@@ -33,4 +34,8 @@ export class Programa {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  @ManyToMany(() => Usuario, (user) => user.programa)
+  @JoinTable()
+  usuario: Usuario;
 }
