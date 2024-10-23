@@ -5,7 +5,7 @@ import { RegisterAuthDto } from './dto/register.dto';
 import { LoginAuthDto } from './dto/login.dto';
 //import { AuthGuard } from './auth.guard';
 import { RolesGuard } from 'src/roles/role-guard/role-guard.guard';
-//import { Roles } from 'src/roles/decorator/role.decorator';
+import { Roles } from 'src/roles/decorator/role.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +13,7 @@ export class AuthController {
 
   @Post('register')
   @UseGuards(RolesGuard)
-  //@Roles('Admin')
+  @Roles('Admin')
   Register(@Body() registerAuthDto: RegisterAuthDto) {
     return this.authService.register(registerAuthDto);
   }

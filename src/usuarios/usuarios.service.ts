@@ -20,11 +20,14 @@ export class UsuariosService {
 
   @Roles('admin')
   async create(createUserDto: CreateUsuarioDto) {
-    const salt = await bcryptjs.genSalt(10); // Genera un salt
-    const password = await bcryptjs.hash(createUserDto.password, salt); // Encripta la contraseña
+    console.log(
+      'contraseña que llega a usuario service:',
+      createUserDto.password,
+    );
+    const password = await bcryptjs.hash(createUserDto.password, 10); // Encripta la contraseña
 
     createUserDto.password = password;
-    console.log('la contraseña que se envia desde usuarioservice:', password);
+    console.log('la contraseña que se guarda:', password);
     // Crear el usuario con la contraseña encriptada
 
     const user = this.userRepository.create(createUserDto);

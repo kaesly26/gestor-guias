@@ -22,7 +22,7 @@ export class UsuariosController {
   constructor(private readonly userService: UsuariosService) {}
 
   @Post()
-  //@Roles('admin')
+  @Roles('Admin')
   create(@Body() createUserDto: CreateUsuarioDto) {
     console.log('aqui en usuario controller', createUserDto);
     return this.userService.create(createUserDto);
@@ -35,31 +35,31 @@ export class UsuariosController {
   }
 
   @Get(':id')
-  @Roles('admin', 'instructor')
+  @Roles('Admin', 'Instructor')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
 
   @Get(':id/programas-asignados')
-  @Roles('admin', 'instructor')
+  @Roles('Admin', 'Instructor')
   findProgramasAsignados(@Param('id') id: string) {
     return this.userService.findProgramasAsignados(+id);
   }
 
   @Get(':id/programas-no-asignados')
-  @Roles('admin')
+  @Roles('Admin')
   findProgramasNoAsignados(@Param('id') id: string) {
     return this.userService.findProgramasNoAsignados(+id);
   }
 
   @Patch(':id')
-  //@Roles('admin')
+  @Roles('Admin')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUsuarioDto) {
     return this.userService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
-  @Roles('admin')
+  @Roles('Admin')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }

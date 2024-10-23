@@ -6,7 +6,6 @@ import { LoginAuthDto } from './dto/login.dto';
 import { RolesService } from 'src/roles/roles.service';
 import { ProgramaService } from 'src/programa/programa.service';
 import { UsuariosService } from 'src/usuarios/usuarios.service';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -15,10 +14,10 @@ export class AuthService {
     private readonly usuarioService: UsuariosService,
     private readonly rolesService: RolesService,
     private readonly programaService: ProgramaService,
-    private readonly JwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
   async register(registerAuthDto: RegisterAuthDto) {
-    console.log('estoy en auth service');
+    console.log('la contraseña que se envie:', registerAuthDto.password);
     const user = await this.usuarioService.findByEmail(registerAuthDto.email);
     if (user) {
       throw new BadRequestException('Email already exists');
@@ -28,13 +27,10 @@ export class AuthService {
       throw new BadRequestException('Role not found');
     }
 
-    const hashedPassword = await bcryptjs.hash(registerAuthDto.password, 10);
-    console.log('la contraseña que se hasea en service:', hashedPassword);
+    // const hashedPassword = await bcryptjs.hash(registerAuthDto.password, 10);
+    // console.log('la contraseña que se hasea en service:', hashedPassword);
 
-    return await this.usuarioService.create({
-      ...registerAuthDto,
-      password: hashedPassword,
-    });
+    return await this.usuarioService.create(registerAuthDto);
   }
 
   async login(loginAuthDto: LoginAuthDto) {
@@ -66,7 +62,7 @@ export class AuthService {
       email: user.email,
       rol: user.role.rol_name,
     };
-    const token = await this.JwtService.signAsync(payload);
+    const token = await this.jwtService.signAsync(payload);
     if (!token) {
       throw new BadRequestException('Invalid credentials');
     }
