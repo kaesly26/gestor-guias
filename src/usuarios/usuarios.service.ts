@@ -82,15 +82,26 @@ export class UsuariosService {
     });
   }
   async update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
+    console.log('datos que llegan al service', updateUsuarioDto);
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new Error('Usuario no encontrado'); // Manejo de errores
     }
+    console.log(
+      'datos que llegan:',
+      updateUsuarioDto.name,
+      updateUsuarioDto.email,
+      updateUsuarioDto.telefono,
+      updateUsuarioDto.cedula,
+      'id:',
+      id,
+    );
 
     // Actualizar el usuario con los nuevos datos
-    Object.assign(user, updateUsuarioDto); // Asigna las propiedades del DTO al usuario
+    const data = Object.assign(user, updateUsuarioDto);
+    console.log(data); // Asigna laso propiedades del DTO al usuari0
 
-    return await this.userRepository.save(user); // Guarda el usuario actualizado
+    return await this.userRepository.save(data); // Guarda el usuario actualizado
   }
 
   async remove(id: number) {

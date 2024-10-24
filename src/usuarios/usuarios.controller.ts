@@ -22,7 +22,7 @@ export class UsuariosController {
   constructor(private readonly userService: UsuariosService) {}
 
   @Post()
-  @Roles('Admin')
+  //@Roles('Admin')
   create(@Body() createUserDto: CreateUsuarioDto) {
     console.log('aqui en usuario controller', createUserDto);
     return this.userService.create(createUserDto);
@@ -54,8 +54,9 @@ export class UsuariosController {
 
   @Patch(':id')
   @Roles('Admin')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUsuarioDto) {
-    return this.userService.update(+id, updateUserDto);
+  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
+    console.log('Cuerpo de la solicitud:', updateUsuarioDto);
+    return this.userService.update(+id, updateUsuarioDto);
   }
 
   @Delete(':id')

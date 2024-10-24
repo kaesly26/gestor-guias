@@ -26,7 +26,6 @@ export class RolesController {
   }
 
   @Get()
-  //@Roles('admin')
   findAll() {
     return this.rolesService.findAll();
   }

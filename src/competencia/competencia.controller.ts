@@ -11,12 +11,14 @@ import {
 import { CompetenciaService } from './competencia.service';
 import { CreateCompetenciaDto } from './dto/create-competencia.dto';
 import { UpdateCompetenciaDto } from './dto/update-competencia.dto';
+import { Roles } from 'src/roles/decorator/role.decorator';
 
 @Controller('competencia')
 export class CompetenciaController {
   constructor(private readonly competenciaService: CompetenciaService) {}
 
   @Post()
+  @Roles('Admin')
   create(@Body() createCompetenciaDto: CreateCompetenciaDto) {
     return this.competenciaService.create(createCompetenciaDto);
   }
@@ -32,6 +34,7 @@ export class CompetenciaController {
   }
 
   @Patch(':Codigo')
+  @Roles('Admin')
   update(
     @Param('Codigo') Codigo: string,
     @Body() updateCompetenciaDto: UpdateCompetenciaDto,
@@ -40,6 +43,7 @@ export class CompetenciaController {
   }
 
   @Delete(':Codigo')
+  @Roles('Admin')
   remove(@Param('Codigo') Codigo: string) {
     return this.competenciaService.remove(Codigo);
   }
