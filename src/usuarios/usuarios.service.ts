@@ -7,15 +7,16 @@ import { Repository } from 'typeorm';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/roles/role-guard/role-guard.guard';
 import { Roles } from 'src/roles/decorator/role.decorator';
-import { ProgramaService } from 'src/programa/programa.service';
 import * as bcryptjs from 'bcryptjs';
+import { Competencia } from 'src/competencia/entities/competencia.entity';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Injectable()
 export class UsuariosService {
   constructor(
     @InjectRepository(Usuario) private userRepository: Repository<Usuario>,
-    private readonly programaService: ProgramaService,
+    @InjectRepository(Competencia)
+    private competenciaRepository: Repository<Competencia>,
   ) {}
 
   @Roles('admin')
@@ -34,40 +35,64 @@ export class UsuariosService {
     return await this.userRepository.save(user);
   }
 
+  async agregarCompetenciasAUsuario(
+    usuarioId: number,
+    competenciasIds: number[],
+  ): Promise<Usuario> {
+    const usuario = await this.userRepository.findOne({
+      where: { id: usuarioId },
+      relations: ['competencias'], // Asegúrate de cargar las competencias
+    });
+
+    if (!usuario) {
+      throw new Error('Usuario no encontrado.');
+    }
+
+    const competencias =
+      await this.competenciaRepository.findByIds(competenciasIds);
+
+    if (!competencias.length) {
+      throw new Error('No se encontraron competencias.');
+    }
+
+    usuario.competencias.push(...competencias);
+    return await this.userRepository.save(usuario);
+  }
+
   @Roles('admin')
   async findAll() {
     const users = await this.userRepository.find({
-      relations: ['programa', 'role'],
+      relations: ['competencias', 'role'],
       select: ['id', 'name', 'email', 'cedula', 'telefono'],
     });
     return users;
   }
 
-  async findProgramasAsignados(id: number) {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      relations: ['programa'],
-    });
-    return user.programa;
-  }
-  async findProgramasNoAsignados(id: number) {
-    // Obtener el usuario con los programas asignados
-    const user = await this.userRepository.findOne({
-      where: { id },
-      relations: ['programa'],
-    });
+  // async findProgramasAsignados(id: number) {
+  //   const user = await this.userRepository.findOne({
+  //     where: { id },
+  //     relations: ['programa'],
+  //   });
+  //   return user.programa;
+  // }
+  // async findProgramasNoAsignados(id: number) {
+  //   // Obtener el usuario con los programas asignados
+  //   const user = await this.userRepository.findOne({
+  //     where: { id },
+  //     relations: ['programa'],
+  //   });
 
-    // Obtener todos los programas
-    const allProgramas = await this.programaService.findAll();
+  //   // Obtener todos los programas
+  //   const allProgramas = await this.programaService.findAll();
 
-    // Filtrar los programas que no están asignados al usuario
-    const programasNoAsignados = allProgramas.filter(
-      (programa) =>
-        !user.programa.some((userPrograma) => userPrograma.ID === programa.ID),
-    );
+  //   // Filtrar los programas que no están asignados al usuario
+  //   const programasNoAsignados = allProgramas.filter(
+  //     (programa) =>
+  //       !user.programa.some((userPrograma) => userPrograma.ID === programa.ID),
+  //   );
 
-    return programasNoAsignados;
-  }
+  //   return programasNoAsignados;
+  // }
 
   async findOne(id: number) {
     return await this.userRepository.findOne({

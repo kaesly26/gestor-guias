@@ -5,10 +5,11 @@ import { ArchivosController } from './archivos.controller';
 import { ResultadoModule } from 'src/resultado/resultado.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Archivo } from './entities/archivo.entity';
+import { Usuario } from 'src/usuarios/entities/usuario.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Archivo]),
+    TypeOrmModule.forFeature([Archivo, Usuario]),
     forwardRef(() => ResultadoModule),
   ],
   controllers: [ArchivosController],

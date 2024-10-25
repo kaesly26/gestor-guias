@@ -33,7 +33,7 @@ export class RegisterAuthDto {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true }) // Valida que cada elemento sea un número
-  programa?: number[];
+  Competencia?: number[];
 
   @IsNotEmpty()
   @IsNumber()

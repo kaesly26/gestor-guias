@@ -4,14 +4,19 @@ import { CreateArchivoDto } from './dto/create-archivo.dto';
 import { UpdateArchivoDto } from './dto/update-archivo.dto';
 import { Archivo } from './entities/archivo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+import { Resultado } from 'src/resultado/entities/resultado.entity';
+import { Usuario } from 'src/usuarios/entities/usuario.entity';
 
 @Injectable()
 export class ArchivosService {
   constructor(
     @InjectRepository(Archivo)
     private archivoRepository: Repository<Archivo>,
+    @InjectRepository(Resultado)
+    private resultadoRepository: Repository<Resultado>,
+    @InjectRepository(Usuario) private userRepository: Repository<Usuario>,
   ) {
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -62,6 +67,43 @@ export class ArchivosService {
     }
   }
 
+  async getArchivosPorUsuario(usuarioId: number) {
+    // Obtener el usuario con sus competencias
+    const usuario = await this.userRepository.findOne({
+      where: { id: usuarioId },
+      relations: ['competencias'], // Cargar las competencias del usuario
+    });
+
+    if (!usuario) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    // Obtener las competencias del usuario
+    const competencias = usuario.competencias;
+
+    // Obtener los resultados asociados a las competencias
+    const resultados = await this.resultadoRepository.find({
+      where: {
+        competencia: {
+          ID: In(competencias.map((c) => c.ID)),
+        },
+      },
+      relations: ['archivos'], 
+    });
+
+    // Obtener todos los archivos de los resultados
+    const archivos = resultados.flatMap((resultado) => resultado.archivos);
+
+    // Verificar si se encontraron archivos
+    if (!archivos.length) {
+      throw new Error(
+        'No se encontraron archivos asociados a las competencias del usuario',
+      );
+    }
+
+    return archivos; 
+  }
+
   async update(
     Codigo: string,
     updateArchivoDto: UpdateArchivoDto,
@@ -87,16 +129,15 @@ export class ArchivosService {
       await cloudinary.uploader.destroy(archivo.public_id, {
         resource_type: 'raw',
       });
-      console.log('se elimino el archivo')
+      console.log('se elimino el archivo');
     } catch (error) {
-      console.error('No se elimino el archivo de clouidnary')
+      console.error('No se elimino el archivo de clouidnary');
     }
     try {
       await this.archivoRepository.delete({ Codigo });
-      console.log('se elimino el registro')
+      console.log('se elimino el registro');
     } catch (error) {
-      console.error('no se elimino el registro')
+      console.error('no se elimino el registro');
     }
-   
   }
 }

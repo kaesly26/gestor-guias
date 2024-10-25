@@ -27,6 +27,17 @@ export class UsuariosController {
     console.log('aqui en usuario controller', createUserDto);
     return this.userService.create(createUserDto);
   }
+  //agregar competencias a usuarios
+  @Post(':id/competencias')
+  async agregarCompetencias(
+    @Param('id') id: number,
+    @Body('competenciasIds') competenciasIds: number[],
+  ) {
+    return await this.userService.agregarCompetenciasAUsuario(
+      id,
+      competenciasIds,
+    );
+  }
 
   @Get()
   //@Roles('admin')
@@ -40,17 +51,17 @@ export class UsuariosController {
     return this.userService.findOne(+id);
   }
 
-  @Get(':id/programas-asignados')
-  @Roles('Admin', 'Instructor')
-  findProgramasAsignados(@Param('id') id: string) {
-    return this.userService.findProgramasAsignados(+id);
-  }
+  // @Get(':id/programas-asignados')
+  // @Roles('Admin', 'Instructor')
+  // findProgramasAsignados(@Param('id') id: string) {
+  //   return this.userService.findProgramasAsignados(+id);
+  // }
 
-  @Get(':id/programas-no-asignados')
-  @Roles('Admin')
-  findProgramasNoAsignados(@Param('id') id: string) {
-    return this.userService.findProgramasNoAsignados(+id);
-  }
+  // @Get(':id/programas-no-asignados')
+  // @Roles('Admin')
+  // findProgramasNoAsignados(@Param('id') id: string) {
+  //   return this.userService.findProgramasNoAsignados(+id);
+  // }
 
   @Patch(':id')
   @Roles('Admin')

@@ -4,7 +4,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { RegisterAuthDto } from './dto/register.dto';
 import { LoginAuthDto } from './dto/login.dto';
 import { RolesService } from 'src/roles/roles.service';
-import { ProgramaService } from 'src/programa/programa.service';
 import { UsuariosService } from 'src/usuarios/usuarios.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -13,7 +12,6 @@ export class AuthService {
   constructor(
     private readonly usuarioService: UsuariosService,
     private readonly rolesService: RolesService,
-    private readonly programaService: ProgramaService,
     private readonly jwtService: JwtService,
   ) {}
   async register(registerAuthDto: RegisterAuthDto) {
@@ -33,6 +31,7 @@ export class AuthService {
     return await this.usuarioService.create(registerAuthDto);
   }
 
+  //Inicio de sesion
   async login(loginAuthDto: LoginAuthDto) {
     const user = await this.usuarioService.findByEmail(loginAuthDto.email);
 

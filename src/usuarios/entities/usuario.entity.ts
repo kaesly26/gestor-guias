@@ -1,4 +1,4 @@
-import { Programa } from 'src/programa/entities/programa.entity';
+import { Competencia } from 'src/competencia/entities/competencia.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import {
   Column,
@@ -28,8 +28,8 @@ export class Usuario {
   @Column()
   password: string;
 
-  @ManyToMany(() => Programa, (programa) => programa.usuario)
-  programa: Programa[];
+  @ManyToMany(() => Competencia, (competencia) => competencia.usuario)
+  competencias: Competencia[];
 
   @ManyToOne(() => Role, (role) => role.usuario)
   role: Role;

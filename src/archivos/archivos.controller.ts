@@ -28,6 +28,7 @@ export class ArchivosController {
     console.log('Datos recibidos:', createArchivoDto);
     return this.archivosService.create(createArchivoDto); // Crea el archivo y sube el PDF
   }
+
   @Post('subir')
   @Roles('Admin', 'Coordinador')
   @UseInterceptors(FileInterceptor('file'))
@@ -46,7 +47,6 @@ export class ArchivosController {
   }
 
   @Get()
-  @Roles('Admin', 'Coordinador')
   findAll() {
     return this.archivosService.findAll();
   }
@@ -55,6 +55,11 @@ export class ArchivosController {
   @Roles('Admin', 'Coordinador')
   findOne(@Param('id') id: string) {
     return this.archivosService.findOne(id);
+  }
+  // Filtro de archivos
+  @Get('usuario/:usuarioId')
+  async getArchivosPorUsuario(@Param('usuarioId') usuarioId: number) {
+    return await this.archivosService.getArchivosPorUsuario(usuarioId);
   }
 
   @Patch(':Codigo')
