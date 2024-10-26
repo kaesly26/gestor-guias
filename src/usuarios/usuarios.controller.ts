@@ -22,17 +22,19 @@ export class UsuariosController {
   constructor(private readonly userService: UsuariosService) {}
 
   @Post()
-  //@Roles('Admin')
+  @Roles('Admin')
   create(@Body() createUserDto: CreateUsuarioDto) {
     console.log('aqui en usuario controller', createUserDto);
     return this.userService.create(createUserDto);
   }
   //agregar competencias a usuarios
   @Post(':id/competencias')
+  @Roles('Admin')
   async agregarCompetencias(
     @Param('id') id: number,
     @Body('competenciasIds') competenciasIds: number[],
   ) {
+    console.log('id', id, 'competencias', competenciasIds);
     return await this.userService.agregarCompetenciasAUsuario(
       id,
       competenciasIds,
@@ -40,7 +42,6 @@ export class UsuariosController {
   }
 
   @Get()
-  //@Roles('admin')
   findAll() {
     return this.userService.findAll();
   }
@@ -72,7 +73,7 @@ export class UsuariosController {
 
   @Delete(':id')
   @Roles('Admin')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.userService.remove(id);
   }
 }

@@ -24,6 +24,7 @@ export class CompetenciaController {
   }
 
   @Get()
+  @Roles('Admin')
   findAll() {
     return this.competenciaService.findAll();
   }
