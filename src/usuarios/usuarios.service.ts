@@ -38,25 +38,50 @@ export class UsuariosService {
   async agregarCompetenciasAUsuario(
     usuarioId: number,
     competenciasIds: number[],
-  ): Promise<Usuario> {
+  ): Promise<{ usuario: Usuario; mensaje: string }> {
+    // Buscar usuario con sus competencias actuales
     const usuario = await this.userRepository.findOne({
       where: { id: usuarioId },
-      relations: ['competencias'], // Asegúrate de cargar las competencias
+      relations: ['competencias'],
     });
 
     if (!usuario) {
       throw new Error('Usuario no encontrado.');
     }
 
-    const competencias =
-      await this.competenciaRepository.findByIds(competenciasIds);
+    // Filtrar las competencias ya asignadas
+    const competenciasActualesIds = usuario.competencias.map((c) => c.ID);
+    const nuevasCompetenciasIds = competenciasIds.filter(
+      (id) => !competenciasActualesIds.includes(id),
+    );
 
-    if (!competencias.length) {
-      throw new Error('No se encontraron competencias.');
+    if (!nuevasCompetenciasIds.length) {
+      return {
+        usuario,
+        mensaje: 'Todas las competencias seleccionadas ya están asignadas.',
+      };
     }
 
-    usuario.competencias.push(...competencias);
-    return await this.userRepository.save(usuario);
+    // Obtener las nuevas competencias desde el repositorio
+    const nuevasCompetencias = await this.competenciaRepository.findByIds(
+      nuevasCompetenciasIds,
+    );
+
+    if (!nuevasCompetencias.length) {
+      throw new Error('No se encontraron competencias nuevas para asignar.');
+    }
+
+    // Agregar solo las nuevas competencias
+    usuario.competencias.push(...nuevasCompetencias);
+    await this.userRepository.save(usuario);
+
+    // Mensaje indicando las competencias ya existentes
+    const mensaje =
+      nuevasCompetenciasIds.length < competenciasIds.length
+        ? 'Algunas competencias ya estaban asignadas y no se duplicaron.'
+        : 'Competencias asignadas con éxito.';
+
+    return { usuario, mensaje };
   }
 
   @Roles('admin')

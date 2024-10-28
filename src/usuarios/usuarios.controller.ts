@@ -34,11 +34,14 @@ export class UsuariosController {
     @Param('id') id: number,
     @Body('competenciasIds') competenciasIds: number[],
   ) {
-    console.log('id', id, 'competencias', competenciasIds);
-    return await this.userService.agregarCompetenciasAUsuario(
+    const resultado = await this.userService.agregarCompetenciasAUsuario(
       id,
       competenciasIds,
     );
+    return {
+      usuario: resultado.usuario,
+      mensaje: resultado.mensaje,
+    };
   }
 
   @Get()
