@@ -9,6 +9,7 @@ import { RolesModule } from 'src/roles/roles.module';
 import { ProgramaModule } from 'src/programa/programa.module';
 import { UsuariosModule } from 'src/usuarios/usuarios.module';
 import { ConfigModule } from '@nestjs/config';
+import { MailService } from './mail.service';
 
 @Module({
   imports: [
@@ -25,6 +26,6 @@ import { ConfigModule } from '@nestjs/config';
     ProgramaModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, MailService],
 })
 export class AuthModule {}

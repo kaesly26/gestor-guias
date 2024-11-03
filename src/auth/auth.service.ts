@@ -1,11 +1,16 @@
 import * as bcryptjs from 'bcryptjs';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { RegisterAuthDto } from './dto/register.dto';
 import { LoginAuthDto } from './dto/login.dto';
 import { RolesService } from 'src/roles/roles.service';
 import { UsuariosService } from 'src/usuarios/usuarios.service';
 import { JwtService } from '@nestjs/jwt';
+import { MailService } from './mail.service';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +18,7 @@ export class AuthService {
     private readonly usuarioService: UsuariosService,
     private readonly rolesService: RolesService,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
   async register(registerAuthDto: RegisterAuthDto) {
     console.log('la contraseña que se envie:', registerAuthDto.password);
@@ -24,9 +30,6 @@ export class AuthService {
     if (!role) {
       throw new BadRequestException('Role not found');
     }
-
-    // const hashedPassword = await bcryptjs.hash(registerAuthDto.password, 10);
-    // console.log('la contraseña que se hasea en service:', hashedPassword);
 
     return await this.usuarioService.create(registerAuthDto);
   }
@@ -70,5 +73,34 @@ export class AuthService {
       rol: payload.rol,
       id: payload.id,
     };
+  }
+  //enviar mensaje de recuperación de contraseña
+  async sendPasswordReset(email: string): Promise<void> {
+    const user = await this.usuarioService.findByEmail(email);
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+
+    // Genera un token de restablecimiento
+    const token = this.jwtService.sign(
+      { userId: user.id },
+      { expiresIn: '1h' },
+    );
+
+    // Envía el token al correo electrónico del usuario
+    const resetLink = `http://localhost:5173/auth/restablecer_clave?token=${token}`;
+    await this.mailService.sendMail({
+      to: email,
+      subject: 'Solicitud de restablecimiento de contraseña',
+      text: `Haga clic en el siguiente enlace para restablecer su contraseña: ${resetLink}`,
+    });
+  }
+
+  async verifyPasswordResetToken(token: string): Promise<string | null> {
+    try {
+      const payload = this.jwtService.verify(token);
+      console.log(payload);
+      return payload.userId;
+    } catch (error) {
+      return null;
+    }
   }
 }

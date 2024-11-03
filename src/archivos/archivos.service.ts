@@ -68,17 +68,15 @@ export class ArchivosService {
   }
 
   async getArchivosPorUsuario(usuarioId: number) {
-    // Obtener el usuario con sus competencias
     const usuario = await this.userRepository.findOne({
       where: { id: usuarioId },
-      relations: ['competencias'], // Cargar las competencias del usuario
+      relations: ['competencias'],
     });
 
     if (!usuario) {
       throw new Error('Usuario no encontrado');
     }
 
-    // Obtener las competencias del usuario
     const competencias = usuario.competencias;
 
     // Obtener los resultados asociados a las competencias
@@ -88,7 +86,7 @@ export class ArchivosService {
           ID: In(competencias.map((c) => c.ID)),
         },
       },
-      relations: ['archivos'], 
+      relations: ['archivos'],
     });
 
     // Obtener todos los archivos de los resultados
@@ -101,7 +99,7 @@ export class ArchivosService {
       );
     }
 
-    return archivos; 
+    return archivos;
   }
 
   async update(

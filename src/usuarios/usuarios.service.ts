@@ -1,4 +1,4 @@
-import { Injectable, UseGuards } from '@nestjs/common';
+import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -39,7 +39,6 @@ export class UsuariosService {
     usuarioId: number,
     competenciasIds: number[],
   ): Promise<{ usuario: Usuario; mensaje: string }> {
-    // Buscar usuario con sus competencias actuales
     const usuario = await this.userRepository.findOne({
       where: { id: usuarioId },
       relations: ['competencias'],
@@ -75,7 +74,6 @@ export class UsuariosService {
     usuario.competencias.push(...nuevasCompetencias);
     await this.userRepository.save(usuario);
 
-    // Mensaje indicando las competencias ya existentes
     const mensaje =
       nuevasCompetenciasIds.length < competenciasIds.length
         ? 'Algunas competencias ya estaban asignadas y no se duplicaron.'
@@ -135,7 +133,7 @@ export class UsuariosService {
     console.log('datos que llegan al service', updateUsuarioDto);
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new Error('Usuario no encontrado'); // Manejo de errores
+      throw new Error('Usuario no encontrado');
     }
     console.log(
       'datos que llegan:',
@@ -147,9 +145,8 @@ export class UsuariosService {
       id,
     );
 
-    // Actualizar el usuario con los nuevos datos
     const data = Object.assign(user, updateUsuarioDto);
-    console.log(data); // Asigna laso propiedades del DTO al usuari0
+    console.log(data);
 
     return await this.userRepository.save(data); // Guarda el usuario actualizado
   }
@@ -162,5 +159,17 @@ export class UsuariosService {
     }
 
     return await this.userRepository.remove(user); // Elimina el usuario
+  }
+
+  async updatePassword(userId: number, newPassword: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const hashedPassword = await bcryptjs.hash(newPassword, 10);
+    user.password = hashedPassword;
+
+    await this.userRepository.save(user);
   }
 }
