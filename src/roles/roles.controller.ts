@@ -26,11 +26,13 @@ export class RolesController {
   }
 
   @Get()
+  @Roles('Admin', 'Coordinador')
   findAll() {
     return this.rolesService.findAll();
   }
 
   @Get(':id')
+  @Roles('Admin', 'Coordinador')
   findOne(@Param('id') id: string) {
     return this.rolesService.findOne(+id);
   }

@@ -7,17 +7,22 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
+  Query,
 } from '@nestjs/common';
 
-//import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/roles/role-guard/role-guard.guard';
 import { Roles } from 'src/roles/decorator/role.decorator';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UsuariosService } from './usuarios.service';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { Programa } from 'src/programa/entities/programa.entity';
+import { Usuario } from './entities/usuario.entity';
+import { Request } from 'express';
 
 @Controller('usuarios')
-@UseGuards(RolesGuard)
+@UseGuards(AuthGuard, RolesGuard)
 export class UsuariosController {
   constructor(private readonly userService: UsuariosService) {}
 
@@ -29,7 +34,7 @@ export class UsuariosController {
   }
   //agregar competencias a usuarios
   @Post(':id/competencias')
-  @Roles('Admin')
+  @Roles('Admin', 'Coordinador')
   async agregarCompetencias(
     @Param('id') id: number,
     @Body('competenciasIds') competenciasIds: number[],
@@ -45,8 +50,14 @@ export class UsuariosController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  @Roles('Admin', 'Coordinador')
+  findAll(
+    @Req() request: Request,
+    @Query('programaNombre') programaNombre?: string,
+  ) {
+    const authenticatedUser = request.user;
+    console.log('usuario que ingresa', authenticatedUser);
+    return this.userService.findAll(authenticatedUser, programaNombre);
   }
 
   @Get(':id')
@@ -55,11 +66,13 @@ export class UsuariosController {
     return this.userService.findOne(+id);
   }
 
-  // @Get(':id/programas-asignados')
-  // @Roles('Admin', 'Instructor')
-  // findProgramasAsignados(@Param('id') id: string) {
-  //   return this.userService.findProgramasAsignados(+id);
-  // }
+  @Get(':usuarioId/programas')
+  @Roles('Admin')
+  async obtenerProgramasDeCompetenciasDeUsuario(
+    @Param('usuarioId') usuarioId: number,
+  ): Promise<{ usuario: Usuario; programas: Programa[] }> {
+    return this.userService.obtenerProgramasDeCompetenciasDeUsuario(usuarioId);
+  }
 
   // @Get(':id/programas-no-asignados')
   // @Roles('Admin')

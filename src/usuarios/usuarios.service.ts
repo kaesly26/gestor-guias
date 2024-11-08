@@ -3,12 +3,13 @@ import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
-import { Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/roles/role-guard/role-guard.guard';
 import { Roles } from 'src/roles/decorator/role.decorator';
 import * as bcryptjs from 'bcryptjs';
 import { Competencia } from 'src/competencia/entities/competencia.entity';
+import { Programa } from 'src/programa/entities/programa.entity';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Injectable()
@@ -82,22 +83,72 @@ export class UsuariosService {
     return { usuario, mensaje };
   }
 
-  @Roles('admin')
-  async findAll() {
-    const users = await this.userRepository.find({
-      relations: ['competencias', 'role'],
-      select: ['id', 'name', 'email', 'cedula', 'telefono'],
-    });
+  async findAll(authenticatedUser: Usuario, programaNombre?: string) {
+    console.log('usuario', authenticatedUser);
+    const userRole = authenticatedUser.role.rol_name;
+    console.log('el usuario', userRole);
+
+    let users = [];
+
+    // Si se proporciona un nombre de programa, buscar usuarios cuyas competencias estén asociadas a ese programa
+    if (programaNombre) {
+      users = await this.userRepository.find({
+        where: {
+          competencias: {
+            programas: {
+              Nombre: Like(`%${programaNombre}%`),
+            },
+          },
+          role:
+            userRole === 'Admin'
+              ? { rol_name: In(['Coordinador', 'Admin']) }
+              : { rol_name: 'Instructor' },
+        },
+        relations: ['competencias', 'competencias.programas', 'role'],
+        select: ['id', 'name', 'email', 'cedula', 'telefono'],
+      });
+    } else {
+      // Si no se proporciona nombre de programa, realizar la búsqueda por rol
+      users = await this.userRepository.find({
+        where: {
+          role:
+            userRole === 'Admin'
+              ? { rol_name: In(['Coordinador', 'Admin']) }
+              : { rol_name: 'Instructor' },
+        },
+        relations: ['competencias', 'competencias.programas', 'role'],
+        select: ['id', 'name', 'email', 'cedula', 'telefono'],
+      });
+    }
+
+    console.log('Usuarios encontrados:', users);
     return users;
   }
 
-  // async findProgramasAsignados(id: number) {
-  //   const user = await this.userRepository.findOne({
-  //     where: { id },
-  //     relations: ['programa'],
-  //   });
-  //   return user.programa;
-  // }
+  async obtenerProgramasDeCompetenciasDeUsuario(
+    usuarioId: number,
+  ): Promise<{ usuario: Usuario; programas: Programa[] }> {
+    // Buscar el usuario junto con sus competencias
+    const usuario = await this.userRepository.findOne({
+      where: { id: usuarioId },
+      relations: ['competencias', 'competencias.programas'],
+    });
+
+    if (!usuario) {
+      throw new Error('Usuario no encontrado.');
+    }
+
+    // Extraer todos los programas únicos de las competencias del usuario
+    const programas = usuario.competencias
+      .flatMap((competencia) => competencia.programas)
+      .filter(
+        (programa, index, self) =>
+          index === self.findIndex((p) => p.ID === programa.ID),
+      );
+
+    return { usuario, programas };
+  }
+
   // async findProgramasNoAsignados(id: number) {
   //   // Obtener el usuario con los programas asignados
   //   const user = await this.userRepository.findOne({

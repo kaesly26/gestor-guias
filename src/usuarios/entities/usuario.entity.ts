@@ -3,6 +3,7 @@ import { Role } from 'src/roles/entities/role.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -31,6 +32,7 @@ export class Usuario {
   @ManyToMany(() => Competencia, (competencia) => competencia.usuario)
   competencias: Competencia[];
 
-  @ManyToOne(() => Role, (role) => role.usuario)
+  @ManyToOne(() => Role, (role) => role.usuarios)
+  @JoinColumn({ name: 'roleId' })
   role: Role;
 }

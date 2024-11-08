@@ -8,6 +8,7 @@ import { In, Repository } from 'typeorm';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { Resultado } from 'src/resultado/entities/resultado.entity';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
+import { Competencia } from 'src/competencia/entities/competencia.entity';
 
 @Injectable()
 export class ArchivosService {
@@ -67,39 +68,52 @@ export class ArchivosService {
     }
   }
 
-  async getArchivosPorUsuario(usuarioId: number) {
+  async obtenerDatosDeCompetenciasDeUsuario(usuarioId: number): Promise<{
+    archivos: {
+      archivo: Archivo;
+      competencia: Competencia;
+    }[];
+  }> {
+    // Buscar el usuario con sus competencias y programas asociados
     const usuario = await this.userRepository.findOne({
       where: { id: usuarioId },
-      relations: ['competencias'],
+      relations: ['competencias', 'competencias.programas'],
     });
 
     if (!usuario) {
-      throw new Error('Usuario no encontrado');
+      throw new Error('Usuario no encontrado.');
     }
 
-    const competencias = usuario.competencias;
+    // Extraer todos los programas únicos de las competencias del usuario
+    // const programas = usuario.competencias
+    //   .flatMap((competencia) => competencia.programas)
+    //   .filter(
+    //     (programa, index, self) =>
+    //       index === self.findIndex((p) => p.ID === programa.ID),
+    //   );
 
-    // Obtener los resultados asociados a las competencias
+    // Extraer las competencias del usuario
+    const competenciasIds = usuario.competencias.map((c) => c.ID);
+
+    // Obtener los resultados de aprendizaje asociados a estas competencias, junto con los archivos
     const resultados = await this.resultadoRepository.find({
       where: {
         competencia: {
-          ID: In(competencias.map((c) => c.ID)),
+          ID: In(competenciasIds),
         },
       },
-      relations: ['archivos'],
+      relations: ['archivos', 'competencia.programas'],
     });
 
-    // Obtener todos los archivos de los resultados
-    const archivos = resultados.flatMap((resultado) => resultado.archivos);
+    const archivos = resultados.flatMap((resultado) =>
+      resultado.archivos.map((archivo) => ({
+        archivo,
+        competencia: resultado.competencia,
+        resultado: resultado,
+      })),
+    );
 
-    // Verificar si se encontraron archivos
-    if (!archivos.length) {
-      throw new Error(
-        'No se encontraron archivos asociados a las competencias del usuario',
-      );
-    }
-
-    return archivos;
+    return { archivos };
   }
 
   async update(

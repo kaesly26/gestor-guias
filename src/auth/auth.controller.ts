@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 
 import { RegisterAuthDto } from './dto/register.dto';
 import { LoginAuthDto } from './dto/login.dto';
-//import { AuthGuard } from './auth.guard';
+import { AuthGuard } from './auth.guard';
 import { RolesGuard } from 'src/roles/role-guard/role-guard.guard';
 import { Roles } from 'src/roles/decorator/role.decorator';
 import { UsuariosService } from 'src/usuarios/usuarios.service';
@@ -16,8 +16,8 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @UseGuards(RolesGuard)
-  @Roles('Admin')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Coordinador')
   Register(@Body() registerAuthDto: RegisterAuthDto) {
     return this.authService.register(registerAuthDto);
   }

@@ -16,6 +16,8 @@ import { CreateArchivoDto } from './dto/create-archivo.dto';
 import { UpdateArchivoDto } from './dto/update-archivo.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'src/roles/decorator/role.decorator';
+import { Archivo } from './entities/archivo.entity';
+import { Competencia } from 'src/competencia/entities/competencia.entity';
 
 @Controller('archivos')
 export class ArchivosController {
@@ -47,6 +49,7 @@ export class ArchivosController {
   }
 
   @Get()
+  @Roles('Admin', 'Coordinador')
   findAll() {
     return this.archivosService.findAll();
   }
@@ -58,8 +61,15 @@ export class ArchivosController {
   }
   // Filtro de archivos
   @Get('usuario/:usuarioId')
-  async getArchivosPorUsuario(@Param('usuarioId') usuarioId: number) {
-    return await this.archivosService.getArchivosPorUsuario(usuarioId);
+  async obtenerDatosDeCompetenciasDeUsuario(
+    @Param('usuarioId') usuarioId: number,
+  ): Promise<{
+    archivos: {
+      archivo: Archivo;
+      competencia: Competencia;
+    }[];
+  }> {
+    return this.archivosService.obtenerDatosDeCompetenciasDeUsuario(usuarioId);
   }
 
   @Patch(':Codigo')

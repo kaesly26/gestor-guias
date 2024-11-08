@@ -24,14 +24,18 @@ export class AuthService {
     console.log('la contraseña que se envie:', registerAuthDto.password);
     const user = await this.usuarioService.findByEmail(registerAuthDto.email);
     if (user) {
-      throw new BadRequestException('Email already exists');
+      throw new BadRequestException('El correo electrónico ya existe');
     }
     const role = await this.rolesService.findOne(registerAuthDto.role);
     if (!role) {
-      throw new BadRequestException('Role not found');
+      throw new BadRequestException('Rol no encontrado');
     }
 
-    return await this.usuarioService.create(registerAuthDto);
+    const newUser = {
+      ...registerAuthDto,
+      role,
+    };
+    return await this.usuarioService.create(newUser);
   }
 
   //Inicio de sesion
@@ -39,7 +43,7 @@ export class AuthService {
     const user = await this.usuarioService.findByEmail(loginAuthDto.email);
 
     if (!user) {
-      throw new BadRequestException('Invalid credentials');
+      throw new BadRequestException('Credenciales no válidas');
     }
     const isPasswordValid = await bcryptjs.compare(
       loginAuthDto.password.trim(),
@@ -62,15 +66,16 @@ export class AuthService {
     const payload = {
       id: user.id,
       email: user.email,
-      rol: user.role.rol_name,
+      role: user.role,
     };
+    console.log('payload', payload);
     const token = await this.jwtService.signAsync(payload);
     if (!token) {
-      throw new BadRequestException('Invalid credentials');
+      throw new BadRequestException('Credenciales no válidas');
     }
     return {
       access_token: token,
-      rol: payload.rol,
+      role: payload.role,
       id: payload.id,
     };
   }
