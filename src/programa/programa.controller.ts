@@ -68,24 +68,24 @@ export class ProgramaController {
       body.programaId,
     );
   }
+  @Delete('relacion-especifica')
+  @Roles('Admin')
+  async deleteRelacionEspecifica(
+    @Body() body: { programaId: number; competenciaId: number },
+  ) {
+    const { programaId, competenciaId } = body;
 
-  // @Delete('eliminar-relacion')
-  // deleteCompetenciaFromPrograma(
-  //   @Body('programaId') programaId: number,
-  //   @Body('competenciaId') competenciaId: number,
-  // ) {
-  //   console.log(
-  //     `Eliminar relación: programaId=${programaId}, competenciaId=${competenciaId}`,
-  //   );
-  //   return this.programaService.deleteCompetenciaFromPrograma(
-  //     programaId,
-  //     competenciaId,
-  //   );
-  // }
+    // Lógica para eliminar la relación específica
+    await this.programaService.deleteRelacionEspecifica(
+      programaId,
+      competenciaId,
+    );
+    return { message: 'Relación eliminada exitosamente' };
+  }
+
   @Delete(':Codigo')
   @Roles('Admin')
   remove(@Param('Codigo') Codigo: string) {
-    console.log('estoy aqui :(');
     return this.programaService.remove(Codigo);
   }
 }

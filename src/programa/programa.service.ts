@@ -113,32 +113,41 @@ export class ProgramaService {
     );
   }
 
-  // async deleteCompetenciaFromPrograma(
-  //   programaId: number,
-  //   competenciaId: number,
-  // ): Promise<void> {
-  //   const programa = await this.programaRepository.findOne({
-  //     where: { ID: programaId },
-  //     relations: ['competencias'],
-  //   });
+  async deleteRelacionEspecifica(
+    programaId: number,
+    competenciaId: number,
+  ): Promise<void> {
+    const programa = await this.programaRepository.findOne({
+      where: { ID: programaId },
+      relations: ['competencias'],
+    });
 
-  //   if (!programa) {
-  //     throw new NotFoundException('Programa no encontrado');
-  //   }
+    if (!programa) {
+      throw new NotFoundException(
+        `Programa con ID ${programaId} no encontrado`,
+      );
+    }
 
-  //   const competenciaIndex = programa.competencias.findIndex(
-  //     (c) => c.ID === competenciaId,
-  //   );
-  //   if (competenciaIndex === -1) {
-  //     throw new NotFoundException(
-  //       `Competencia con ID ${competenciaId} no está asociada a este programa`,
-  //     );
-  //   }
+    // Filtrar la competencia a eliminar
+    const competencia = programa.competencias.find(
+      (c) => c.ID === competenciaId,
+    );
 
-  //   await this.programaRepository
-  //     .createQueryBuilder()
-  //     .relation(Programa, 'competencias')
-  //     .of(programaId)
-  //     .remove(competenciaId);
-  // }
+    if (!competencia) {
+      throw new NotFoundException(
+        `La competencia con ID ${competenciaId} no está asociada al programa`,
+      );
+    }
+
+    // Eliminar la relación
+    await this.programaRepository
+      .createQueryBuilder()
+      .relation(Programa, 'competencias')
+      .of(programa)
+      .remove(competencia);
+
+    console.log(
+      `Relación eliminada entre Programa (ID=${programaId}) y Competencia (ID=${competenciaId})`,
+    );
+  }
 }
