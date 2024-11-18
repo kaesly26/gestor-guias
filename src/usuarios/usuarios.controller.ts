@@ -48,6 +48,17 @@ export class UsuariosController {
       mensaje: resultado.mensaje,
     };
   }
+  @Delete(':usuarioId/competencias/:competenciaId')
+  @Roles('Admin', 'Coordinador')
+  async eliminarCompetencia(
+    @Param('usuarioId') usuarioId: number,
+    @Param('competenciaId') competenciaId: number,
+  ): Promise<{ message: string }> {
+    await this.userService.eliminarCompetencia(usuarioId, competenciaId);
+    return {
+      message: `Competencia con ID ${competenciaId} eliminada del usuario ${usuarioId}.`,
+    };
+  }
 
   @Get()
   @Roles('Admin', 'Coordinador')

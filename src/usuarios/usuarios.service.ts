@@ -83,6 +83,36 @@ export class UsuariosService {
     return { usuario, mensaje };
   }
 
+  async eliminarCompetencia(
+    usuarioId: number,
+    competenciaId: number,
+  ): Promise<void> {
+    const usuario = await this.userRepository.findOne({
+      where: { id: usuarioId },
+      relations: ['competencias'], // Incluye las competencias asociadas
+    });
+
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con ID ${usuarioId} no encontrado.`);
+    }
+
+    const competencia = await this.competenciaRepository.findOne({
+      where: { ID: competenciaId },
+    });
+
+    if (!competencia) {
+      throw new NotFoundException(
+        `Competencia con ID ${competenciaId} no encontrada.`,
+      );
+    }
+
+    // Elimina la competencia del usuario
+    usuario.competencias = usuario.competencias.filter(
+      (comp) => comp.ID !== competenciaId,
+    );
+    await this.userRepository.save(usuario); // Guarda los cambios en la base de datos
+  }
+
   async findAll(authenticatedUser: Usuario, programaNombre?: string) {
     console.log('usuario', authenticatedUser);
     const userRole = authenticatedUser.role.rol_name;
@@ -149,25 +179,6 @@ export class UsuariosService {
     return { usuario, programas };
   }
 
-  // async findProgramasNoAsignados(id: number) {
-  //   // Obtener el usuario con los programas asignados
-  //   const user = await this.userRepository.findOne({
-  //     where: { id },
-  //     relations: ['programa'],
-  //   });
-
-  //   // Obtener todos los programas
-  //   const allProgramas = await this.programaService.findAll();
-
-  //   // Filtrar los programas que no están asignados al usuario
-  //   const programasNoAsignados = allProgramas.filter(
-  //     (programa) =>
-  //       !user.programa.some((userPrograma) => userPrograma.ID === programa.ID),
-  //   );
-
-  //   return programasNoAsignados;
-  // }
-
   async findOne(id: number) {
     return await this.userRepository.findOne({
       where: { id },
@@ -206,10 +217,10 @@ export class UsuariosService {
     console.log('lo que llega del front', id);
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new Error('Usuario no encontrado'); // Manejo de errores
+      throw new Error('Usuario no encontrado');
     }
 
-    return await this.userRepository.remove(user); // Elimina el usuario
+    return await this.userRepository.remove(user);
   }
 
   async updatePassword(userId: number, newPassword: string): Promise<void> {
