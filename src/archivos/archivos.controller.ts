@@ -18,6 +18,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'src/roles/decorator/role.decorator';
 import { Archivo } from './entities/archivo.entity';
 import { Competencia } from 'src/competencia/entities/competencia.entity';
+import { Resultado } from 'src/resultado/entities/resultado.entity';
+import { Programa } from 'src/programa/entities/programa.entity';
 
 @Controller('archivos')
 export class ArchivosController {
@@ -66,7 +68,9 @@ export class ArchivosController {
   ): Promise<{
     archivos: {
       archivo: Archivo;
+      resultado: Resultado;
       competencia: Competencia;
+      programa: Programa;
     }[];
   }> {
     return this.archivosService.obtenerDatosDeCompetenciasDeUsuario(usuarioId);

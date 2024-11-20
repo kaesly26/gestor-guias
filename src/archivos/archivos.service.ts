@@ -9,6 +9,7 @@ import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { Resultado } from 'src/resultado/entities/resultado.entity';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
 import { Competencia } from 'src/competencia/entities/competencia.entity';
+import { Programa } from 'src/programa/entities/programa.entity';
 
 @Injectable()
 export class ArchivosService {
@@ -71,46 +72,46 @@ export class ArchivosService {
   async obtenerDatosDeCompetenciasDeUsuario(usuarioId: number): Promise<{
     archivos: {
       archivo: Archivo;
+      resultado: Resultado;
       competencia: Competencia;
+      programa: Programa;
     }[];
   }> {
-    // Buscar el usuario con sus competencias y programas asociados
+    // Buscar al usuario y cargar sus competencias con programas asociados
     const usuario = await this.userRepository.findOne({
       where: { id: usuarioId },
       relations: ['competencias', 'competencias.programas'],
     });
 
     if (!usuario) {
-      throw new Error('Usuario no encontrado.');
+      throw new NotFoundException('Usuario no encontrado.');
     }
 
-    // Extraer todos los programas únicos de las competencias del usuario
-    // const programas = usuario.competencias
-    //   .flatMap((competencia) => competencia.programas)
-    //   .filter(
-    //     (programa, index, self) =>
-    //       index === self.findIndex((p) => p.ID === programa.ID),
-    //   );
+    // Extraer IDs de competencias del usuario
+    const competenciasIds = usuario.competencias.map(
+      (competencia) => competencia.ID,
+    );
 
-    // Extraer las competencias del usuario
-    const competenciasIds = usuario.competencias.map((c) => c.ID);
-
-    // Obtener los resultados de aprendizaje asociados a estas competencias, junto con los archivos
+    // Obtener resultados de aprendizaje con archivos y programas asociados
     const resultados = await this.resultadoRepository.find({
       where: {
-        competencia: {
-          ID: In(competenciasIds),
-        },
+        competencia: { ID: In(competenciasIds) },
       },
-      relations: ['archivos', 'competencia.programas'],
+      relations: ['archivos', 'competencia', 'competencia.programas'],
     });
 
+    // Construir respuesta con archivos, resultados, competencias y programas
     const archivos = resultados.flatMap((resultado) =>
-      resultado.archivos.map((archivo) => ({
-        archivo,
-        competencia: resultado.competencia,
-        resultado: resultado,
-      })),
+      resultado.archivos.map((archivo) => {
+        const competencia = resultado.competencia;
+        const programa = competencia.programas[0]; // Asumimos un programa por competencia
+        return {
+          archivo,
+          resultado,
+          competencia,
+          programa,
+        };
+      }),
     );
 
     return { archivos };

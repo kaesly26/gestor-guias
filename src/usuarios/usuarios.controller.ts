@@ -85,12 +85,6 @@ export class UsuariosController {
     return this.userService.obtenerProgramasDeCompetenciasDeUsuario(usuarioId);
   }
 
-  // @Get(':id/programas-no-asignados')
-  // @Roles('Admin')
-  // findProgramasNoAsignados(@Param('id') id: string) {
-  //   return this.userService.findProgramasNoAsignados(+id);
-  // }
-
   @Patch(':id')
   @Roles('Admin')
   update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
