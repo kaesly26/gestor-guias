@@ -27,7 +27,7 @@ export class UsuariosController {
   constructor(private readonly userService: UsuariosService) {}
 
   @Post()
-  @Roles('Admin')
+  @Roles('Admin', 'Coordinador')
   create(@Body() createUserDto: CreateUsuarioDto) {
     console.log('aqui en usuario controller', createUserDto);
     return this.userService.create(createUserDto);
@@ -72,13 +72,13 @@ export class UsuariosController {
   }
 
   @Get(':id')
-  @Roles('Admin', 'Instructor')
+  @Roles('Admin', 'Coordinador')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
 
   @Get(':usuarioId/programas')
-  @Roles('Admin')
+  @Roles('Admin', 'Coordinador')
   async obtenerProgramasDeCompetenciasDeUsuario(
     @Param('usuarioId') usuarioId: number,
   ): Promise<{ usuario: Usuario; programas: Programa[] }> {
@@ -86,14 +86,14 @@ export class UsuariosController {
   }
 
   @Patch(':id')
-  @Roles('Admin')
-  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
+  @Roles('Admin', 'Coordinador')
+  update(@Param('id') id: number, @Body() updateUsuarioDto: UpdateUsuarioDto) {
     console.log('Cuerpo de la solicitud:', updateUsuarioDto);
-    return this.userService.update(+id, updateUsuarioDto);
+    return this.userService.update(id, updateUsuarioDto);
   }
 
   @Delete(':id')
-  @Roles('Admin')
+  @Roles('Admin', 'Coordinador')
   remove(@Param('id') id: number) {
     return this.userService.remove(id);
   }

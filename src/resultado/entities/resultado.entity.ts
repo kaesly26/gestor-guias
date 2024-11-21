@@ -23,7 +23,7 @@ export class Resultado {
   @Column({ length: 80 })
   Nombre: string;
 
-  @Column({ length: 100 })
+  @Column({ length: 225 })
   Descripcion: string;
 
   @ManyToOne(() => Competencia, (competencia) => competencia.resultados)

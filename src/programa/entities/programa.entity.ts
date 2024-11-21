@@ -21,7 +21,7 @@ export class Programa {
   @Column({ length: 80 })
   Nombre: string;
 
-  @Column({ length: 100 })
+  @Column({ length: 225 })
   Descripcion: string;
 
   @ManyToMany(() => Competencia, (competencia) => competencia.programas)
