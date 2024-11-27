@@ -125,9 +125,10 @@ export class UsuariosService {
       users = await this.userRepository.find({
         where: {
           competencias: {
-            programas: {
-              Nombre: Like(`%${programaNombre}%`),
-            },
+            programas: [
+              { Nombre: Like(`%${programaNombre}%`) },
+              { Codigo: Like(`%${programaNombre}%`) },
+            ],
           },
           role: userRole === 'Admin' ? {} : { rol_name: 'Instructor' },
         },
