@@ -3,7 +3,7 @@ import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
-import { In, Like, Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/roles/role-guard/role-guard.guard';
 import { Roles } from 'src/roles/decorator/role.decorator';
@@ -129,10 +129,7 @@ export class UsuariosService {
               Nombre: Like(`%${programaNombre}%`),
             },
           },
-          role:
-            userRole === 'Admin'
-              ? { rol_name: In(['Coordinador', 'Admin']) }
-              : { rol_name: 'Instructor' },
+          role: userRole === 'Admin' ? {} : { rol_name: 'Instructor' },
         },
         relations: ['competencias', 'competencias.programas', 'role'],
         select: ['id', 'name', 'email', 'cedula', 'telefono'],
@@ -141,10 +138,7 @@ export class UsuariosService {
       // Si no se proporciona nombre de programa, realizar la búsqueda por rol
       users = await this.userRepository.find({
         where: {
-          role:
-            userRole === 'Admin'
-              ? { rol_name: In(['Coordinador', 'Admin']) }
-              : { rol_name: 'Instructor' },
+          role: userRole === 'Admin' ? {} : { rol_name: 'Instructor' },
         },
         relations: ['competencias', 'competencias.programas', 'role'],
         select: ['id', 'name', 'email', 'cedula', 'telefono'],
