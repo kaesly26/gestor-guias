@@ -34,7 +34,7 @@ export class ArchivosController {
   }
 
   @Post('subir')
-  @Roles('Admin', 'Coordinador')
+  @Roles('Admin', 'Coordinador', 'Instructor')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
@@ -51,13 +51,13 @@ export class ArchivosController {
   }
 
   @Get()
-  @Roles('Admin', 'Coordinador')
+  @Roles('Admin', 'Coordinador', 'Instructor')
   findAll() {
     return this.archivosService.findAll();
   }
 
   @Get(':id')
-  @Roles('Admin', 'Coordinador')
+  @Roles('Admin', 'Coordinador', 'Instructor')
   findOne(@Param('id') id: string) {
     return this.archivosService.findOne(id);
   }
@@ -77,7 +77,7 @@ export class ArchivosController {
   }
 
   @Patch(':Codigo')
-  @Roles('Admin', 'Coordinador')
+  @Roles('Admin', 'Coordinador', 'Instructor')
   update(
     @Param('Codigo') Codigo: string,
     @Body() updateArchivoDto: UpdateArchivoDto,
@@ -86,7 +86,7 @@ export class ArchivosController {
   }
 
   @Delete(':Codigo')
-  @Roles('Admin', 'Coordinador')
+  @Roles('Admin', 'Coordinador', 'Instructor')
   remove(@Param('Codigo') Codigo: string) {
     return this.archivosService.remove(Codigo);
   }
